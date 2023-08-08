@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Sunup.DeviceModel</AssemblyName>
+    <RootNamespace>Sunup.DeviceModel</RootNamespace>
+
+  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataSource\DataSource.csproj" />
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+    <ProjectReference Include="..\ScriptLibrary\ScriptLibrary.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>

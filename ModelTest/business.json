@@ -1,0 +1,42 @@
+{
+"Name" :"demo1",
+  "Nodes" : [{
+		"Name": "设备模型1",
+		"DefaultValue": 0,
+		"ValueType" : 1,
+		"IsHiden" : false,
+		"Nodes" : [{
+			"Name": "设备模型2",
+			"DefaultValue": 0,
+			"ValueType" : 1,
+			"IsHiden" : false,
+			"Expression" : "DevicesProxy.GetData(Root.设备模型1.设备模型2.设备模型3.Value,'temprature') + 100",
+			"Action" : " Root.设备模型1.Value = DevicesProxy.GetData('Device1','pressure');",
+			"Nodes" : [{
+				"Name": "设备模型3",
+				"DefaultValue": "Device1",
+				"ValueType" : 2,
+				"IsHiden" : false,
+				
+			}]
+		}]
+  }],
+  "Devices" : [{
+		"DeviceType": 3,
+		"Name": "Device1",
+		"Enable": true,
+		"Options" : {"Mode":"Server","Server": "127.0.0.1", "Port": 6601, "User" :"testuser", "Password":"nichai", "Quality" :2, "Retained": false },
+		"ExternalItems":[{"Identify":"/asset1/temprature","ValueType":1},{"Identify": "/asset1/pressure","ValueType":1}],
+		"ResultParser" : "
+				var jsonSet = JSON.parse(DataSource.DataSet);
+                var tempratureString= jsonSet['/asset1/temprature'];
+                var temprature = parseInt(tempratureString);
+				var pressureString= jsonSet['/asset1/pressure'];
+                var pressure = parseInt(pressureString) +10;
+                //var pressure= jsonSet.pressure + 10;
+                Device.SetField('temprature', temprature);
+                Device.SetField('pressure', pressure);
+	   "
+   }]
+  
+}

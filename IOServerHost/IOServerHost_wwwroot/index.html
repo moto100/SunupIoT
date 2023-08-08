@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        table {
+            border: 0
+        }
+
+        .commslog-data {
+            font-family: Consolas, Courier New, Courier, monospace;
+        }
+
+        .commslog-server {
+            background-color: red;
+            color: white
+        }
+
+        .commslog-client {
+            background-color: green;
+            color: white
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Test Page</h1>
+    <p id="stateLabel">Ready to connect...</p>
+    <div>
+        <label for="connectionUrl">WebSocket Server URL:</label>
+        <input id="connectionUrl" />
+        <button id="connectButton" type="submit">Connect</button>
+        <button id="closeButton" disabled>Close Socket</button>
+    </div>
+    <div>
+        <label for="tags">Tags:</label>
+        <input id="tags" style="width:200px" value="['Line1.Product1.Temprature1']" disabled />
+        <input id="requestId" style="width:200px" value="'AAAAAAAAAAAAAA'" disabled />
+        <button id="subcribe" type="submit" disabled>Subcribe Tags</button>
+        <div>
+            <input id="appendedtags" style="width:200px" value="['Line1.Product1.Temprature2']" disabled />
+            <button id="subcribeappend" type="submit" disabled>Subcribe Tags(Append to existing subscription)</button>
+            </div>
+        <div>
+            <input id="removedtags" style="width:200px" value="['Line1.Product1.Temprature2']" disabled />
+            <button id="unsubscribe" type="submit" disabled>Unsubcribe Tags</button>
+        </div>
+        <div>
+            <input id="writtentags" style="width:200px" value="Line1.Product1.Temprature2" disabled />
+            <input id="writtenvalue" style="width:200px" value="89" disabled />
+            <button id="write" type="submit" disabled>Write Tag</button>
+        </div>
+    </div>
+
+    <p>Note: When connected to the default server (i.e. the server in the address bar ;)), the message "ServerClose" will cause the server to close the connection. Similarly, the message "ServerAbort" will cause the server to forcibly terminate the connection without a closing handshake</p>
+
+    <h2>Communication Log</h2>
+    <table style="width: 800px">
+        <thead>
+            <tr>
+                <td style="width: 100px">From</td>
+                <td style="width: 100px">To</td>
+                <td>Data</td>
+            </tr>
+        </thead>
+        <tbody id="commsLog"></tbody>
+    </table>
+
+    <script>
+        var connectionForm = document.getElementById("connectionForm");
+        var connectionUrl = document.getElementById("connectionUrl");
+        var connectButton = document.getElementById("connectButton");
+        var stateLabel = document.getElementById("stateLabel");
+        var tags = document.getElementById("tags");
+        var requestId = document.getElementById("requestId");
+        var subscribe = document.getElementById("subcribe");
+        var appendedtags = document.getElementById("appendedtags");
+        var subcribeappend = document.getElementById("subcribeappend");
+        var removedtags = document.getElementById("removedtags");
+        var unsubscribe = document.getElementById("unsubscribe");
+
+        var writtentags = document.getElementById("writtentags");
+        var writtenvalue = document.getElementById("writtenvalue");
+        var write = document.getElementById("write");
+
+        var sendForm = document.getElementById("sendForm");
+        var commsLog = document.getElementById("commsLog");
+        var socket;
+        var subscriptionId = null;
+        var scheme = document.location.protocol == "https:" ? "wss" : "ws";
+        var port = document.location.port ? (":" + document.location.port) : "";
+        connectionUrl.value = scheme + "://" + document.location.hostname + port + "/Service/ws";
+        function updateState() {
+            function disable() {
+                tags.disabled = true;
+                requestId.disabled = true;
+                subscribe.disabled = true;
+                subcribeappend.disabled = true;
+                appendedtags.disabled = true;
+                closeButton.disabled = true;
+                removedtags.disabled = true;
+                unsubscribe.disabled = true;
+                writtentags.disabled = true;
+                writtenvalue.disabled = true;
+                write.disabled = true;
+            }
+            function enable() {
+                tags.disabled = false;
+                requestId.disabled = false;
+                subscribe.disabled = false;
+                subcribeappend.disabled = false;
+                appendedtags.disabled = false;
+                closeButton.disabled = false;
+                removedtags.disabled = false;
+                unsubscribe.disabled = false;
+                writtentags.disabled = false;
+                writtenvalue.disabled = false;
+                write.disabled = false;
+            }
+            connectionUrl.disabled = true;
+            connectButton.disabled = true;
+            if (!socket) {
+                disable();
+            } else {
+                switch (socket.readyState) {
+                    case WebSocket.CLOSED:
+                        stateLabel.innerHTML = "Closed";
+                        disable();
+                        connectionUrl.disabled = false;
+                        connectButton.disabled = false;
+                        break;
+                    case WebSocket.CLOSING:
+                        stateLabel.innerHTML = "Closing...";
+                        disable();
+                        break;
+                    case WebSocket.CONNECTING:
+                        stateLabel.innerHTML = "Connecting...";
+                        disable();
+                        break;
+                    case WebSocket.OPEN:
+                        stateLabel.innerHTML = "Open";
+                        enable();
+                        break;
+                    default:
+                        stateLabel.innerHTML = "Unknown WebSocket State: " + socket.readyState;
+                        disable();
+                        break;
+                }
+            }
+        }
+        closeButton.onclick = function () {
+            if (!socket || socket.readyState != WebSocket.OPEN) {
+                alert("socket not connected");
+                return;
+            }
+            socket.close(1000, "Closing from client");
+        }
+       
+        subscribe.onclick = function () {
+            if (!socket || socket.readyState != WebSocket.OPEN) {
+                alert("socket not connected");
+                return;
+            }
+            var tagarray = tags.value;
+            var requestIdVal = requestId.value;
+            var data = "{\"function\": \"Subscribe\",\"expressions\": " + tagarray + ",\"requestId\": " + requestIdVal +"}";
+            socket.send(data);
+            commsLog.innerHTML += '<tr>' +
+                '<td class="commslog-client">Client</td>' +
+                '<td class="commslog-server">Server</td>' +
+                '<td class="commslog-data">' + data + '</td>'
+            '</tr>';
+        }
+        subcribeappend.onclick = function () {
+            if (!socket || socket.readyState != WebSocket.OPEN) {
+                alert("socket not connected");
+                return;
+            }
+
+            if (subscriptionId == null) {
+                alert("don't have a subscriptionId");
+                return;
+            }
+            var tagarray = appendedtags.value;
+            var data = "{\"function\": \"Subscribe\",'subscriptionId':" + subscriptionId+",\"expressions\": " + tagarray + "}";
+            socket.send(data);
+            commsLog.innerHTML += '<tr>' +
+                '<td class="commslog-client">Client</td>' +
+                '<td class="commslog-server">Server</td>' +
+                '<td class="commslog-data">' + data + '</td>'
+            '</tr>';
+        }
+        unsubscribe.onclick = function () {
+            if (!socket || socket.readyState != WebSocket.OPEN) {
+                alert("socket not connected");
+                return;
+            }
+
+            if (subscriptionId == null) {
+                alert("don't have a subscriptionId");
+                return;
+            }
+            var tagarray = removedtags.value;
+            var data = "{\"function\": \"Unsubscribe\",'subscriptionId':" + subscriptionId + ",\"expressions\": " + tagarray + "}";
+            socket.send(data);
+            commsLog.innerHTML += '<tr>' +
+                '<td class="commslog-client">Client</td>' +
+                '<td class="commslog-server">Server</td>' +
+                '<td class="commslog-data">' + data + '</td>'
+            '</tr>';
+        }
+        write.onclick = function () {
+            if (!socket || socket.readyState != WebSocket.OPEN) {
+                alert("socket not connected");
+                return;
+            }
+            var tag = writtentags.value;
+            var tagvalue = writtenvalue.value;
+            var data = "{\"function\": \"WriteNode\",'name':'" + tag + "',\"value\": '" + tagvalue + "'}";
+            socket.send(data);
+            commsLog.innerHTML += '<tr>' +
+                '<td class="commslog-client">Client</td>' +
+                '<td class="commslog-server">Server</td>' +
+                '<td class="commslog-data">' + data + '</td>'
+            '</tr>';
+        }
+        connectButton.onclick = function () {
+            stateLabel.innerHTML = "Connecting";
+            socket = new WebSocket(connectionUrl.value);
+            socket.onopen = function (event) {
+                updateState();
+                commsLog.innerHTML += '<tr>' +
+                    '<td colspan="3" class="commslog-data">Connection opened</td>' +
+                    '</tr>';
+            };
+            socket.onclose = function (event) {
+                updateState();
+                commsLog.innerHTML += '<tr>' +
+                    '<td colspan="3" class="commslog-data">Connection closed. Code: ' + event.code + '. Reason: ' + event.reason + '</td>' +
+                    '</tr>';
+            };
+            socket.onerror = updateState;
+            socket.onmessage = function (event) {
+                var json = JSON.parse(event.data);
+                if (json['Data'] != null && json['Data']['subscriptionId'] != null) {
+                    subscriptionId = json['Data']['subscriptionId'];
+                }
+                commsLog.innerHTML += '<tr>' +
+                    '<td class="commslog-server">Server</td>' +
+                    '<td class="commslog-client">Client</td>' +
+                    '<td class="commslog-data">' + event.data + '</td>'
+                '</tr>';
+            };
+        };
+    </script>
+</body>

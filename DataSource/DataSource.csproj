@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Sunup.DataSource</AssemblyName>
+    <RootNamespace>Sunup.DataSource</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Logger\Diagnostics.csproj" />
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+    <ProjectReference Include="..\ScriptExecutor\ScriptExecutor.csproj" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>

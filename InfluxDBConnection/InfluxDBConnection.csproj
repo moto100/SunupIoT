@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyName>Sunup.InfluxDBConnection</AssemblyName>
+		<RootNamespace>Sunup.InfluxDBConnection</RootNamespace>
+	</PropertyGroup>
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+  <ItemGroup>
+    <PackageReference Include="InfluxDB.Client" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Logger\Diagnostics.csproj" />
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+  </ItemGroup>
+</Project>
+

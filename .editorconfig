@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS8002: Referenced assembly 'CSScriptLib, Version=1.3.1.0, Culture=neutral, PublicKeyToken=null' does not have a strong name.
+dotnet_diagnostic.CS8002.severity = none

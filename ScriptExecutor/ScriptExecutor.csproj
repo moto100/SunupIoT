@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Sunup.ScriptExecutor</AssemblyName>
+    <RootNamespace>Sunup.ScriptExecutor</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jint" Version="2.11.58" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Logger\Diagnostics.csproj" />
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>

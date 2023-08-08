@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Sunup.ControlPanel</AssemblyName>
+    <RootNamespace>Sunup.ControlPanel</RootNamespace>
+	 
+  </PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\DBConnection\DBConnection.csproj" />
+		<ProjectReference Include="..\Logger\Diagnostics.csproj" />
+		<ProjectReference Include="..\Utility\Utility.csproj" />
+	</ItemGroup>
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>

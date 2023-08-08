@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Sunup.DataSource.MQTT</AssemblyName>
+    <RootNamespace>Sunup.DataSource.MQTT</RootNamespace>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MQTTnet" Version="3.0.13" />
+    <PackageReference Include="System.Text.Json" Version="4.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataSource\DataSource.csproj" />
+    <ProjectReference Include="..\Logger\Diagnostics.csproj" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>

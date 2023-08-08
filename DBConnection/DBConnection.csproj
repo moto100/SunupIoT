@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AssemblyName>Sunup.DBConnection</AssemblyName>
+		<RootNamespace>Sunup.DBConnection</RootNamespace>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MySql.Data" Version="8.0.21" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+	</ItemGroup>
+
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>
+

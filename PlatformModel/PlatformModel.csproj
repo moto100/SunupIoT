@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Sunup.PlatformModel</AssemblyName>
+    <RootNamespace>Sunup.PlatformModel</RootNamespace>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="VTQ.cs" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeviceModel\DeviceModel.csproj" />
+    <ProjectReference Include="..\Logger\Diagnostics.csproj" />
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+    <ProjectReference Include="..\ScriptLibrary\ScriptLibrary.csproj" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>

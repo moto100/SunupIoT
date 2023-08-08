@@ -1,0 +1,73 @@
+{
+  "Name" :"demo1",
+  "Nodes" : [{
+		"Name": "Line1",
+		"DefaultValue": 0,
+		"ValueType" : 1,
+		"IsHiden" : false,
+		"Nodes" : [{
+			"Name": "Product1",
+			"DefaultValue": 0,
+			"ValueType" : 1,
+			"IsHiden" : false,
+			"Expression" : "DevicesProxy.GetData('Ph1','temprature')",
+				"Nodes" : [
+				{
+					"Name": "Switch1",
+					"DefaultValue": false,
+					"ValueType" : 3,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('Ph1','switch')",
+					"Action" : " 
+					var bool1 = DevicesProxy.GetData('Ph1','switch');
+					if (bool1)
+					{
+					  Root.Line1.Product2.Status.Value = 2;
+					}
+					else
+					{
+					Root.Line1.Product2.Status.Value = 1;
+					}
+					",
+				}
+				],
+				},
+			{
+			"Name": "Product2",
+			"DefaultValue": 0,
+			"ValueType" : 1,
+			"IsHiden" : false,
+			"Nodes" : [{
+				"Name": "Status",
+				"DefaultValue": 0,
+				"ValueType" : 1,
+				"IsHiden" : false,
+				
+			}
+			]
+		}]
+  }],
+  "Devices" : [{
+        "DeviceType": 99,
+		"Name": "Ph1",
+		"Enable": true,
+		"Options" : {"GenerateBoolData": true, "GenerateIntData": true, "GenerateStringData" :true, "DataInstanceNumber":5, "TimerInterval": 1000,"MinInteger": 0, "MaxInteger": 120, "IntegerStep" :1},
+		"ResultParser" : "
+	            Console.Log(' console.log :'+DataSource.DataSet);
+				var jsonSet = JSON.parse(DataSource.DataSet);
+				
+				var temprature= jsonSet['int1'];
+				Device.SetField('temprature', temprature);
+				
+				var pressure= jsonSet['int2'];
+                Device.SetField('pressure', pressure + 10);
+				
+				var temprature1 = Device.GetFieldValue('temprature');
+				Console.Log(' console.log read temprature from device fields:'+temprature1);
+				var switchbutton= jsonSet['bool1'];
+                Device.SetField('switch', switchbutton);
+	   "
+   }
+   ]
+  
+}

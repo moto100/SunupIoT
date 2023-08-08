@@ -1,0 +1,11 @@
+{
+  "appSettings": {
+    "ListenOn": "http://localhost:9001,https://localhost",
+    "DefaultAppPath": "C:/SunupDemoApp/"
+  },
+  "HTTPS": {
+    "Enable": true,
+    "Certificate": "SampleCertificate.pfx",
+    "CertificatePWD": "SampleCertificate"
+  }
+}

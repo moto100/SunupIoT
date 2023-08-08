@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Sunup.DataSource.Simulator</AssemblyName>
+    <RootNamespace>Sunup.DataSource.Simulator</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="System.Text.Json" Version="4.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <ProjectReference Include="..\DataSource\DataSource.csproj" />
+	  <ProjectReference Include="..\Logger\Diagnostics.csproj" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>

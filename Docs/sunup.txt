@@ -1,0 +1,12 @@
+
+
+
+  #1. MS .Net Core 3.1 (C#)
+  #2. MQTT 3.1.1(311)
+  #3. Window 10.
+  #4. zlan 5144J(ModbusToMQTT), 9743(ModbusToMQTT RF 433)
+  #5. Google Chrome.
+
+    Source => device => device proxy=>container(run expressions) => data collector => container wrapper =>
+	subscription=> connection(session) => WebSocketProxy(session)
+  

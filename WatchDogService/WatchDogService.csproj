@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{78D1167F-BFA3-46A4-9EC3-BEFAEE3D9DFB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Sunup.WatchDogService</RootNamespace>
+    <AssemblyName>Sunup.WatchDogService</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Output\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Output\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="WatchDog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WatchDog.Designer.cs">
+      <DependentUpon>WatchDog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Log\WinEventLog.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WatchDog.resx">
+      <DependentUpon>WatchDog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="InstallWatchDogService--RunAsAdmin.bat" />
+    <None Include="UninstallWatchDogService--RunAsAdmin.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Diagnostic\Diagnostic.csproj">
+      <Project>{19c6070a-1f0e-40f5-8ad2-abb34686684d}</Project>
+      <Name>Diagnostic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(ProjectDir)\InstallWatchDogService--RunAsAdmin.bat" "$(TargetDir)\InstallWatchDogService--RunAsAdmin.bat"
+
+copy "$(ProjectDir)\UninstallWatchDogService--RunAsAdmin.bat" "$(TargetDir)\UninstallWatchDogService--RunAsAdmin.bat"
+
+if not exist "$(TargetDir)\InstallUtil.exe"  copy "$(SolutionDir)\References\WindowServiceInstaller\InstallUtil.exe" "$(TargetDir)\InstallUtil.exe"
+
+if not exist "$(TargetDir)\InstallUtil.exe.config"  copy "$(SolutionDir)\References\WindowServiceInstaller\InstallUtil.exe.config" "$(TargetDir)\InstallUtil.exe.config"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

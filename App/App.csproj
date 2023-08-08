@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Sunup.App</AssemblyName>
+    <RootNamespace>Sunup.App</RootNamespace>
+	 
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <ProjectReference Include="..\InfluxDBConnection\InfluxDBConnection.csproj" />
+	  <ProjectReference Include="..\PlatformModel\PlatformModel.csproj" />
+	  <ProjectReference Include="..\DataSourceSimulator\Simulator.csproj" />
+    <ProjectReference Include="..\MQTT\MQTT.csproj" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
+</Project>

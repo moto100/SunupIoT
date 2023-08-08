@@ -1,0 +1,13 @@
+{
+  "ConnectionStrings": {
+    "DbConnection": "server=DESKTOP-UJ7IABI; database=Sunup; uid=SunupAdmin; pwd=SunupAdmin; TrustServerCertificate=True;"
+  },
+  "appSettings": {
+    "ListenOn": "http://localhost:7001"
+  },
+  "HTTPS": {
+    "Enable": false,
+    "Certificate": "SampleCertificate.pfx",
+    "CertificatePWD": "SampleCertificate"
+  }
+}

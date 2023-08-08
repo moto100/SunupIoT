@@ -1,0 +1,138 @@
+{
+  "Name" :"demo1",
+  "Nodes" : [{
+		"Name": "Line1",
+		"DefaultValue": 0,
+		"ValueType" : 1,
+		"IsHiden" : false,
+		"Nodes" : [{
+			"Name": "Product1",
+			"DefaultValue": 0,
+			"ValueType" : 1,
+			"IsHiden" : false,
+				"Nodes" : [
+				{
+					"Name": "Switch1",
+					"DefaultValue": false,
+					"ValueType" : 3,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('Ph1','Switch1')",
+				},
+				{
+					"Name": "Temprature1",
+					"DefaultValue": 0,
+					"ValueType" : 1,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('MQTTServer1','Temprature1')",
+					"BoundDevice":"MQTTServer1",
+					"BoundField" :"Shidu",
+				},
+				{
+					"Name": "Temprature2",
+					"DefaultValue": 0,
+					"ValueType" : 1,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('Ph1','Temprature2')",
+					"BoundDevice" : "MQTTServer1",
+					"BoundField" :"Shidu",
+				}
+				,
+				{
+					"Name": "Speed1",
+					"DefaultValue": 0,
+					"ValueType" : 1,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('Ph1','Speed1')",
+				}
+				,
+				{
+					"Name": "Pressure1",
+					"DefaultValue": 0,
+					"ValueType" : 1,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('Ph1','Pressure1')",
+				}
+				,
+				{
+					"Name": "Speed2",
+					"DefaultValue": 0,
+					"ValueType" : 1,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('Ph1','Speed2')",
+				}
+				,
+				{
+					"Name": "Power1",
+					"DefaultValue": 0,
+					"ValueType" : 1,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('Ph1','Power1')",
+				}
+				,
+				{
+					"Name": "Trend1",
+					"DefaultValue": 0,
+					"ValueType" : 1,
+					"IsHiden" : false,
+					"Expression" : "DevicesProxy.GetData('Ph1','Trend1')",
+				}
+				],
+				},
+			]
+  }],
+  "Devices" : [{
+        "DeviceType": 99,
+		"Name": "Ph1",
+		"Enable": true,
+		"Options" : {"GenerateBoolData": true, "GenerateIntData": true, "GenerateStringData" :true, "DataInstanceNumber":7, "TimerInterval": 1000,"MinInteger": 0, "MaxInteger": 120, "IntegerStep" :1},
+		"ResultParser" : "
+				var jsonSet = JSON.parse(DataSource.DataSet);
+				
+				var Temprature1= jsonSet['stepint1'];
+				Device.SetField('Temprature1', Temprature1);
+				
+				var Temprature2= jsonSet['stepint2'];
+				Device.SetField('Temprature2', Temprature2);
+				
+				var Pressure1= jsonSet['stepint3'];
+				Device.SetField('Pressure1', Pressure1);
+				
+				var Speed1= jsonSet['stepint4'];
+				Device.SetField('Speed1', Speed1);
+				
+				var Speed2= jsonSet['stepint5'];
+				Device.SetField('Speed2', Speed2);
+				
+				var Power1= jsonSet['stepint6'];
+				Device.SetField('Power1', Power1);
+				
+				var Trend1= jsonSet['stepint7'];
+				Device.SetField('Trend1', Trend1);
+				
+				var Switch1= jsonSet['bool1'];
+                Device.SetField('Switch1', Switch1);
+	   "
+   },
+   {
+		"DeviceType": 3,
+		"Name": "MQTTServer1",
+		"Enable": true,
+		"Options" : {"Mode":"Server","Server": "127.0.0.1", "Port": 1883, "User" :"test", "Password":"test", "Quality" :0, "Retained": false },
+		"SubscriptionTopics":[{"Topic":"zlanpublish"}],
+		"SubscriptionResultParser" : "
+		Console.log(DataSource.DataSet);
+		        var jsonSet = JSON.parse(DataSource.DataSet);
+				var Temprature1= jsonSet['Wendu'];
+				Device.SetField('Temprature1', Temprature1);
+				var Temprature2= jsonSet['Shidu'];
+				Device.SetField('Temprature2', Temprature2);
+				
+	   ",
+	   "PublishmentTopics":[{"Topic":"zlanpublish1","Fields": "Shidu"}],
+	   "OnPublishmentParser" : "
+	     Device.SetWrittenField('DeviceId', '1234567890');
+	   ",
+   }
+   ]
+  
+}
