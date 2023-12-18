@@ -33,7 +33,7 @@ SunupIoT 是一款旨在解决各种IoT设备接入，数据收集，数据过�
 #### 使用说明
 
 1.  下载master分支代码，用VS2022打开Sunup.sln,编译整个解决方案。
-1.1 配置日志数据库，在app.config文件里有MSSQL数据库连接字符串， 按自己的配置更新它，并在在库里运行DBScript\CreateDB.sql 生成日志表。
+1.1     配置日志数据库，在app.config文件里有MSSQL数据库连接字符串， 按自己的配置更新它，并在在库里运行DBScript\CreateDB.sql 生成日志表。
 2.  在VS2022中以项目的形式运行"ControlPanelWeb"项目，不要用默认的IISExpress运行项目，它会打开默认网页http://localhost:7001。
 3.  Sunup的前端是基于ng-alain中台实现的，这就需要从 https://gitee.com/moto100/ng-alain/tree/Sunup.ControlPanel/ 下载前端代码，分支名是Sunup.ControlPanel。
 4.  在VSCode中打开前端代码Sunup.ControlPanel，编译Angular代码， 最后运行npm run start启动前端站点，此时会打开一个http://localhost:4200，它会默认直接链接到后端http://localhost:7001上获取数据。也可以编译发布版本，成功后把生成的文件拷贝到ControlPanelWeb的网站http://localhost:7001下的wwwroot文件夹下直接使用一个站点。
