@@ -24,9 +24,9 @@ SunupIoT 是一款旨在解决各种IoT设备接入，数据收集，数据过�
 
 
 #### 软件架构
-![输入图片说明](https://github.com/moto100/SunupIoT/blob/master/READMEPICS/Architecture.png "屏幕截图")
+![输入图片说明](/READMEPICS/Architecture.png "屏幕截图")
 
-![输入图片说明](https://github.com/moto100/SunupIoT/blob/master/READMEPICS/Workflow.png "屏幕截图")
+![输入图片说明](/READMEPICS/Workflow.png "屏幕截图")
 
 
 
