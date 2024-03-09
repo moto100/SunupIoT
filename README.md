@@ -33,14 +33,20 @@ SunupIoT 是一款旨在解决各种IoT设备接入，数据收集，数据过�
 #### 使用说明
 
 1.  下载master分支代码，用VS2022打开Sunup.sln,编译整个解决方案。
-1.1     配置日志数据库，在app.config文件里有MSSQL数据库连接字符串， 按自己的配置更新它，并在在库里运行DBScript\CreateDB.sql 生成日志表。
-2.  在VS2022中以项目的形式运行"ControlPanelWeb"项目，不要用默认的IISExpress运行项目，它会打开默认网页http://localhost:7001。
-3.  Sunup的前端是基于ng-alain中台实现的，这就需要从 https://gitee.com/moto100/ng-alain/tree/Sunup.ControlPanel/ 下载前端代码，分支名是Sunup.ControlPanel。
-4.  在VSCode中打开前端代码Sunup.ControlPanel，编译Angular代码， 最后运行npm run start启动前端站点，此时会打开一个http://localhost:4200，它会默认直接链接到后端http://localhost:7001上获取数据。也可以编译发布版本，成功后把生成的文件拷贝到ControlPanelWeb的网站http://localhost:7001下的wwwroot文件夹下直接使用一个站点。
-5.  在Sunup的前端页面上登入进去，默认用户名和密码是 sunup temptemp
-6.  进入后点击《新建空应用》按钮新建一个空应用，不做任何改变，保存，再在该应用按钮中选择《导入应用》，导入[Sunup.sln所在文件夹下]SunupDemoApp\PlatformModel.json。再在该应用的下拉按钮中选择《发布运行》，等一会后该应用名前面会出现【已发布】和一个蓝色小点，它代表应用发布并运行起来了。
-7.  在浏览器中打开#6中建立的应用的网站地址，如http://localhost:9001/，会看到《WebSocket Test Page》的默认页面，到此默认的例子程序就运行起来了。
-8.  《WebSocket Test Page》的页面，点击《connect》链接WebSocket， 再点击《Subcribe Tags》和《Subcribe Tags(Append to existing subscription)》去订阅数据变化和追加订阅。因为Line1.Product1.Temprature1 是绑定MQTT设备的字段， 是没有数据变化的，Line1.Product1.Temprature2是绑定的一个内置的模拟器，这时会看到页面不停地有Line1.Product1.Temprature2的数据返回。此时可以直接再基于WebSocket的页面做应用系统的数据对接。
+2.   配置日志数据库，在ControlPanelWeb\ControlPanelWeb_appsettings.config文件里有MSSQL数据库连接字符串， 按自己的配置更新它，并在数据库里运行DBScript\CreateDB.sql 生成日志表。
+3.  在VS2022中运行"ControlPanelWeb"项目，它会打开默认网页http://localhost:7001，默认用户名和密码是 sunup temptemp。
+4. 由于系统有个默认发布的应用，它会运行起来，记住它的网站地址。
+5.  在浏览器中打开应用的网站地址，如http://localhost:9001/，会看到《WebSocket Test Page》的默认页面，到此默认的例子程序就运行起来了。
+6.  《WebSocket Test Page》的页面，点击《connect》链接WebSocket， 再点击《Subcribe Tags》和《Subcribe Tags(Append to existing subscription)》去订阅数据变化和追加订阅。因为这些Tag绑定到一个内置的模拟器，这时会看到页面不停地有数据返回。此时可以直接再基于这个WebSocket的页面做应用系统的数据对接。
+
+#### 如何让前端单独连接后端平台
+1.  Sunup的前端是基于ng-alain中台实现的，这就需要从 https://github.com/moto100/ng-alain/tree/Sunup.ControlPanel （https://gitee.com/moto100/ng-alain/tree/Sunup.ControlPanel/） 下载前端代码，分支名是Sunup.ControlPanel。
+2.  在VSCode中打开前端代码Sunup.ControlPanel，编译Angular代码， 最后运行npm run start启动前端站点，此时会打开一个http://localhost:4200，它会默认直接链接到后端http://localhost:7001上获取数据。也可以编译发布版本，成功后把生成的文件拷贝到ControlPanelWeb的网站http://localhost:7001下的wwwroot文件夹下直接使用同一个站点。
+3.  在Sunup的前端页面上登入进去，默认用户名和密码是 sunup temptemp
+4.  这是也有一个demo APP在运行，其他如上面的使用说明的4-6。
+
+#### 如何建一个新的APP
+1.  进入站点后点击《新建空应用》按钮新建一个空应用，不做任何改变，保存，再在该应用按钮中选择《导入应用》，导入[Sunup.sln所在文件夹下]SunupDemoApp\PlatformModel.json。再在该应用的下拉按钮中选择《发布运行》，等一会后该应用名前面会出现【已发布】和一个蓝色小点，它代表应用发布并运行起来了。
 
 #### 说明
 1.  IOGateway项目是一个发布后可以运行在树莓派4b（Ubantu系统）上的ModbusRTU转MQTT程序.
