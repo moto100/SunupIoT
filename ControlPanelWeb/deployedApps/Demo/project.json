@@ -1,0 +1,150 @@
+{
+  "Name": "demo1",
+  "Nodes": [
+    {
+      "Name": "Line1",
+      "DefaultValue": 0,
+      "ValueType": 1,
+      "IsHiden": false,
+      "Nodes": [
+        {
+          "Name": "Product1",
+          "DefaultValue": 0,
+          "ValueType": 1,
+          "IsHiden": false,
+          "IsStored": false,
+          "Expression": null,
+          "Action": null,
+          "BoundDevice": null,
+          "BoundField": null,
+          "Nodes": [
+            {
+              "Name": "Switch1",
+              "DefaultValue": false,
+              "ValueType": 3,
+              "IsHiden": false,
+              "IsStored": false,
+              "Expression": "DevicesProxy.GetData('Simulator-1','bool1')",
+              "Action": null,
+              "BoundDevice": null,
+              "BoundField": null,
+              "Nodes": []
+            },
+            {
+              "Name": "Temprature1",
+              "DefaultValue": 0,
+              "ValueType": 1,
+              "IsHiden": false,
+              "IsStored": false,
+              "Expression": "DevicesProxy.GetData('Simulator-1','int1')",
+              "Action": null,
+              "BoundDevice": "MQTTServer1",
+              "BoundField": "Shidu",
+              "Nodes": []
+            },
+            {
+              "Name": "Temprature2",
+              "DefaultValue": 0,
+              "ValueType": 1,
+              "IsHiden": false,
+              "IsStored": false,
+              "Expression": "DevicesProxy.GetData('Simulator-1','int2')",
+              "Action": null,
+              "BoundDevice": "MQTTServer1",
+              "BoundField": "Shidu",
+              "Nodes": []
+            },
+            {
+              "Name": "Speed1",
+              "DefaultValue": 0,
+              "ValueType": 1,
+              "IsHiden": false,
+              "Expression": "DevicesProxy.GetData('Ph1','Speed1')",
+              "Nodes": []
+            },
+            {
+              "Name": "Pressure1",
+              "DefaultValue": 0,
+              "ValueType": 1,
+              "IsHiden": false,
+              "Expression": "DevicesProxy.GetData('Ph1','Pressure1')",
+              "Nodes": []
+            },
+            {
+              "Name": "Speed2",
+              "DefaultValue": 0,
+              "ValueType": 1,
+              "IsHiden": false,
+              "Expression": "DevicesProxy.GetData('Ph1','Speed2')",
+              "Nodes": []
+            },
+            {
+              "Name": "Power1",
+              "DefaultValue": 0,
+              "ValueType": 1,
+              "IsHiden": false,
+              "Expression": "DevicesProxy.GetData('Ph1','Power1')",
+              "Nodes": []
+            },
+            {
+              "Name": "Trend1",
+              "DefaultValue": 0,
+              "ValueType": 1,
+              "IsHiden": false,
+              "Expression": "DevicesProxy.GetData('Ph1','Trend1')",
+              "Nodes": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Devices": [
+    {
+      "Id": "124a5482-5e93-e1c9-dae0-6dc134f5ab77",
+      "DeviceType": 99,
+      "Name": "Simulator-1",
+      "Enable": true,
+      "InputDataProcessMode": 1,
+      "Options": {
+        "GenerateBoolData": true,
+        "GenerateIntData": true,
+        "GenerateStringData": true,
+        "DataInstanceNumber": 7,
+        "TimerInterval": 1000,
+        "MinInteger": 0,
+        "MaxInteger": 120,
+        "IntegerStep": 1
+      },
+      "ResultParser": ""
+    },
+    {
+      "DeviceType": 3,
+      "Name": "MQTTServer1",
+      "Enable": true,
+      "InputDataProcessMode": 2,
+      "Options": {
+        "Mode": "Server",
+        "Server": "127.0.0.1",
+        "Port": 1883,
+        "User": "test",
+        "Password": "test",
+        "Quality": 0,
+        "Retained": false
+      },
+      "SubscriptionTopics": [
+        {
+          "Topic": "zlanpublish"
+        }
+      ],
+      "SubscriptionResultParser": "\n\t\tConsole.log(DataSource.DataSet);\n\t\t        var jsonSet = JSON.parse(DataSource.DataSet);\n\t\t\t\tvar Temprature1= jsonSet['Wendu'];\n\t\t\t\tDevice.SetField('Temprature1', Temprature1);\n\t\t\t\tvar Temprature2= jsonSet['Shidu'];\n\t\t\t\tDevice.SetField('Temprature2', Temprature2);\n\t\t\t\t\n\t   ",
+      "PublishmentTopics": [
+        {
+          "Topic": "zlanpublish1",
+          "Fields": "Shidu"
+        }
+      ],
+      "OnPublishmentParser": "\n\t     Device.SetWrittenField('DeviceId', '1234567890');\n\t   "
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "Id": "Demo",
+    "Name": "新建应用1",
+    "Desc": "新建应用的描述",
+    "Avatar": "",
+    "ApiAddress": "http://localhost:9001",
+    "Deployed": true,
+    "IsRunning": false,
+    "LogLevel": "Warning",
+    "StartUp": true,
+    "ProcessId": null
+  }
+]
