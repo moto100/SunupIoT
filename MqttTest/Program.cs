@@ -17,7 +17,7 @@ namespace MqttTest
             options.Retained = false;
             MQTTClient mQTTSource = new MQTTClient("MqttTest", options, new string[]{"/AAA/BBB" });
 
-            mQTTSource.Run();
+            mQTTSource.Start();
 
             System.Threading.Thread.Sleep(1000);
             mQTTSource.Publish("/AAA/CCC", "cheshi1");

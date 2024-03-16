@@ -7,9 +7,8 @@ namespace Sunup.ScriptExecutor
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Esprima.Ast;
     using Jint;
-    using Jint.Parser;
-    using Jint.Parser.Ast;
     using Sunup.Contract;
 
     /// <summary>
@@ -19,6 +18,8 @@ namespace Sunup.ScriptExecutor
     {
         private Engine engine;
         private Program program;
+        private Script script;
+        private object completionValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JintEngine"/> class.
@@ -59,15 +60,41 @@ namespace Sunup.ScriptExecutor
         /// Execute script.
         /// </summary>
         /// <param name="script">Script content.</param>
-        public void Execute(string script)
+        /// <param name="force">force to run script.</param>
+        public void Execute(string script, bool force = false)
         {
-            if (this.program == null)
+            if (string.IsNullOrEmpty(script))
             {
-                var parser = new JintScriptParser();
-                this.program = parser.Parse(script);
+                return;
             }
 
-            this.engine.Execute(this.program);
+            if (this.script == null || force)
+            {
+                this.script = Engine.PrepareScript(script);
+            }
+
+            this.engine.Execute(this.script);
+        }
+
+        /// <summary>
+        /// Evaluate script.
+        /// </summary>
+        /// <param name="script">Script content.</param>
+        /// <param name="force">force to run script.</param>
+        public void Evaluate(string script, bool force = false)
+        {
+            if (string.IsNullOrEmpty(script))
+            {
+                return;
+            }
+
+            if (this.script == null || force)
+            {
+                this.script = Engine.PrepareScript(script);
+            }
+
+            var value = this.engine.Evaluate(this.script);
+            this.completionValue = value.ToObject();
         }
 
         /// <summary>
@@ -76,8 +103,7 @@ namespace Sunup.ScriptExecutor
         /// <returns>Value.</returns>
         public object GetValue()
         {
-           var value = this.engine.GetCompletionValue();
-           return value.ToObject();
+            return this.completionValue;
         }
 
         /// <summary>
@@ -96,7 +122,7 @@ namespace Sunup.ScriptExecutor
 
             if (this.program != null)
             {
-                parser.ExtractVaribale(this.program);
+                //// parser.ExtractVaribale(this.program);
                 if (parser.Variables != null && parser.Variables.Count > 0)
                 {
                     parser.Variables.ForEach(x =>

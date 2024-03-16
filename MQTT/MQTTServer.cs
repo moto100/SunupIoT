@@ -6,14 +6,12 @@ namespace Sunup.DataSource.MQTT
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Text;
     using System.Text.Json;
+    using System.Threading.Tasks;
     using MQTTnet;
-    using MQTTnet.Client;
-    using MQTTnet.Client.Receiving;
     using MQTTnet.Protocol;
     using MQTTnet.Server;
     using Sunup.Contract;
@@ -83,7 +81,7 @@ namespace Sunup.DataSource.MQTT
         /// <summary>
         /// Run data source.
         /// </summary>
-        public override void Run()
+        public override void Start()
         {
             if (this.items == null || this.items.Length == 0)
             {
@@ -96,7 +94,7 @@ namespace Sunup.DataSource.MQTT
                 {
                     if (this.mqttServer == null || !this.mqttServer.IsStarted)
                     {
-                        this.StartServer();
+                       Task.Run(() => this.StartServer());
                     }
                 }
             }
@@ -105,24 +103,9 @@ namespace Sunup.DataSource.MQTT
         /// <summary>
         /// Stop.
         /// </summary>
-        public override async void Stop()
+        public override void Stop()
         {
-            if (this.mqttServer == null)
-            {
-                return;
-            }
-
-            try
-            {
-                await this.mqttServer?.StopAsync();
-                this.mqttServer = null;
-                Logger.LogInfo("[MQTT Server]MQTT Server is stopped.");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"[MQTT Server]MQTT Server fail to stop.", ex);
-                Logger.LogTrace($"[MQTT Server]MQTT Server fail to stop.", ex);
-            }
+           Task.Run(() => this.StopServer());
         }
 
         /// <summary>
@@ -148,7 +131,7 @@ namespace Sunup.DataSource.MQTT
 
                 if (!string.IsNullOrEmpty(json))
                 {
-                    this.Publish(publishedItem.Key, json);
+                    Task.Run(() => this.Publish(publishedItem.Key, json));
                 }
             }
            else
@@ -172,13 +155,14 @@ namespace Sunup.DataSource.MQTT
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="message">Message.</param>
-        public void Publish(string topic, string message)
+        /// <returns>Task.</returns>
+        private async Task Publish(string topic, string message)
         {
             try
             {
                 if (this.mqttServer == null || !this.mqttServer.IsStarted)
                 {
-                    return;
+                    await Task.CompletedTask;
                 }
 
                 Logger.LogTrace("[MQTT Server]Publish >>Topic: " + topic + "; QoS: " + this.quality + "; Retained: " + this.retained + ";");
@@ -188,18 +172,18 @@ namespace Sunup.DataSource.MQTT
                  .WithPayload(message).WithRetainFlag(this.retained);
                 if (this.quality == 0)
                 {
-                    mamb = mamb.WithAtMostOnceQoS();
+                    mamb = mamb.WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce);
                 }
                 else if (this.quality == 1)
                 {
-                    mamb = mamb.WithAtLeastOnceQoS();
+                    mamb = mamb.WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce);
                 }
                 else if (this.quality == 2)
                 {
-                    mamb = mamb.WithExactlyOnceQoS();
+                    mamb = mamb.WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce);
                 }
 
-                this.mqttServer.PublishAsync(mamb.Build());
+                await this.mqttServer.InjectApplicationMessage(new InjectedMqttApplicationMessage(mamb.Build())).ConfigureAwait(continueOnCapturedContext: false);
             }
             catch (Exception exp)
             {
@@ -208,16 +192,40 @@ namespace Sunup.DataSource.MQTT
             }
         }
 
-        private async void StartServer()
+        private async Task StopServer()
+        {
+            if (this.mqttServer == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await this.mqttServer.StopAsync().ConfigureAwait(false);
+                this.mqttServer = null;
+                Logger.LogInfo("[MQTT Server]MQTT Server is stopped.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"[MQTT Server]MQTT Server fail to stop.", ex);
+                Logger.LogTrace($"[MQTT Server]MQTT Server fail to stop.", ex);
+            }
+        }
+
+        private async Task StartServer()
         {
             try
             {
-                var optionsBuilder = new MqttServerOptionsBuilder()
+                var mqttFactory = new MqttFactory();
+
+                var optionsBuilder = mqttFactory.CreateServerOptionsBuilder()
+                    .WithDefaultEndpoint()
                 .WithDefaultEndpointBoundIPAddress(IPAddress.Parse(this.mqttServerAddress)).WithDefaultEndpointPort(this.port);
+
+                this.mqttServer = mqttFactory.CreateMqttServer(optionsBuilder.Build());
                 if (!string.IsNullOrEmpty(this.user) && !string.IsNullOrEmpty(this.password))
                 {
-                    optionsBuilder.WithConnectionValidator(
-                    clientConnection =>
+                    this.mqttServer.ValidatingConnectionAsync += clientConnection =>
                     {
                         var currentUser = this.user;
                         var currentPWD = this.password;
@@ -226,19 +234,19 @@ namespace Sunup.DataSource.MQTT
                             if (currentUser == null || currentPWD == null)
                             {
                                 clientConnection.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                                return;
+                                return Task.CompletedTask;
                             }
 
-                            if (clientConnection.Username != currentUser)
+                            if (clientConnection.UserName != currentUser)
                             {
                                 clientConnection.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                                return;
+                                return Task.CompletedTask;
                             }
 
                             if (clientConnection.Password != currentPWD)
                             {
                                 clientConnection.ReasonCode = MqttConnectReasonCode.BadUserNameOrPassword;
-                                return;
+                                return Task.CompletedTask;
                             }
                         }
                         else if (this.SercurityMode == SercurityMode.BlackList)
@@ -246,24 +254,24 @@ namespace Sunup.DataSource.MQTT
                             if (this.ClientAccessList != null && this.ClientAccessList.Exists(x => x.Enabled && x.DeviceId == clientConnection.ClientId))
                             {
                                 clientConnection.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
-                                return;
+                                return Task.CompletedTask;
                             }
                         }
                         else if (this.SercurityMode == SercurityMode.WhithList)
                         {
                             if (this.ClientAccessList != null)
                             {
-                                var both = this.ClientAccessList.Exists(x => x.Enabled && !string.IsNullOrEmpty(x.DeviceId) && !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password) && clientConnection.ClientId == x.DeviceId && clientConnection.Username == x.UserName && clientConnection.Password == x.Password);
+                                var both = this.ClientAccessList.Exists(x => x.Enabled && !string.IsNullOrEmpty(x.DeviceId) && !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password) && clientConnection.ClientId == x.DeviceId && clientConnection.UserName == x.UserName && clientConnection.Password == x.Password);
                                 if (!both)
                                 {
                                     var deviceMarched = this.ClientAccessList.Exists(x => x.Enabled && !string.IsNullOrEmpty(x.DeviceId) && string.IsNullOrEmpty(x.UserName) && clientConnection.ClientId == x.DeviceId);
                                     if (!deviceMarched)
                                     {
-                                        var namePasswordMarched = this.ClientAccessList.Exists(x => x.Enabled && string.IsNullOrEmpty(x.DeviceId) && !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password) && clientConnection.Username == x.UserName && clientConnection.Password == x.Password);
+                                        var namePasswordMarched = this.ClientAccessList.Exists(x => x.Enabled && string.IsNullOrEmpty(x.DeviceId) && !string.IsNullOrEmpty(x.UserName) && !string.IsNullOrEmpty(x.Password) && clientConnection.UserName == x.UserName && clientConnection.Password == x.Password);
                                         if (!namePasswordMarched)
                                         {
                                             clientConnection.ReasonCode = MqttConnectReasonCode.NotAuthorized;
-                                            return;
+                                            return Task.CompletedTask;
                                         }
                                     }
                                 }
@@ -271,30 +279,31 @@ namespace Sunup.DataSource.MQTT
                         }
 
                         clientConnection.ReasonCode = MqttConnectReasonCode.Success;
-                    });
+                        return Task.CompletedTask;
+                    };
                 }
 
-                optionsBuilder.WithSubscriptionInterceptor(
-                    clientConnection =>
-                    {
-                        clientConnection.AcceptSubscription = true;
-                    }).WithApplicationMessageInterceptor(
-                    clientConnection =>
-                    {
-                        clientConnection.AcceptPublish = true;
-                    });
+                this.mqttServer.InterceptingSubscriptionAsync += clientConnection =>
+                {
+                    clientConnection.ProcessSubscription = true;
+                    return Task.CompletedTask;
+                };
 
-                this.mqttServer = new MqttFactory().CreateMqttServer() as MqttServer;
-                this.mqttServer.StartedHandler = new MqttServerStartedHandlerDelegate(this.OnMqttServerStarted);
-                this.mqttServer.StoppedHandler = new MqttServerStoppedHandlerDelegate(this.OnMqttServerStopped);
+                this.mqttServer.InterceptingPublishAsync += clientConnection =>
+                {
+                    clientConnection.ProcessPublish = true;
+                    return Task.CompletedTask;
+                };
+                this.mqttServer.StartedAsync += this.OnMqttServerStarted;
+                this.mqttServer.StoppedAsync += this.OnMqttServerStopped;
 
-                this.mqttServer.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(this.OnMqttServerClientConnected);
-                this.mqttServer.ClientDisconnectedHandler = new MqttServerClientDisconnectedHandlerDelegate(this.OnMqttServerClientDisconnected);
-                this.mqttServer.ClientSubscribedTopicHandler = new MqttServerClientSubscribedHandlerDelegate(this.OnMqttServerClientSubscribedTopic);
-                this.mqttServer.ClientUnsubscribedTopicHandler = new MqttServerClientUnsubscribedTopicHandlerDelegate(this.OnMqttServerClientUnsubscribedTopic);
-                this.mqttServer.ApplicationMessageReceivedHandler = new MqttApplicationMessageReceivedHandlerDelegate(this.OnMqttServer_ApplicationMessageReceived);
+                this.mqttServer.ClientConnectedAsync += this.OnMqttServerClientConnected;
+                this.mqttServer.ClientDisconnectedAsync += this.OnMqttServerClientDisconnected;
+                this.mqttServer.ClientSubscribedTopicAsync += this.OnMqttServerClientSubscribedTopic;
+                this.mqttServer.ClientUnsubscribedTopicAsync += this.OnMqttServerClientUnsubscribedTopic;
+                this.mqttServer.InterceptingPublishAsync += this.OnMqttServer_ApplicationMessageReceived;
 
-                await this.mqttServer.StartAsync(optionsBuilder.Build());
+                await this.mqttServer.StartAsync().ConfigureAwait(false);
             }
             catch (Exception exp)
             {
@@ -303,41 +312,47 @@ namespace Sunup.DataSource.MQTT
             }
         }
 
-        private void OnMqttServerStarted(EventArgs e)
+        private Task OnMqttServerStarted(EventArgs e)
         {
             Logger.LogInfo("[MQTT Server]MQTT Server is started.");
+            return Task.CompletedTask;
         }
 
-        private void OnMqttServerStopped(EventArgs e)
+        private Task OnMqttServerStopped(EventArgs e)
         {
             Logger.LogInfo("[MQTT Server]MQTT Server is stopped.");
+            return Task.CompletedTask;
         }
 
-        private void OnMqttServerClientConnected(MqttServerClientConnectedEventArgs e)
+        private Task OnMqttServerClientConnected(ClientConnectedEventArgs e)
         {
             Logger.LogInfo($"[MQTT Server]Client[{e.ClientId}] is connected.");
+            return Task.CompletedTask;
         }
 
-        private void OnMqttServerClientDisconnected(MqttServerClientDisconnectedEventArgs e)
+        private Task OnMqttServerClientDisconnected(ClientDisconnectedEventArgs e)
         {
             Logger.LogInfo($"[MQTT Server]Client[{e.ClientId}] is disconnected.");
+            return Task.CompletedTask;
         }
 
-        private void OnMqttServerClientSubscribedTopic(MqttServerClientSubscribedTopicEventArgs e)
+        private Task OnMqttServerClientSubscribedTopic(ClientSubscribedTopicEventArgs e)
         {
             Logger.LogInfo($"[MQTT Server]Client[{e.ClientId}] subcribed topic[{e.TopicFilter}].");
+            return Task.CompletedTask;
         }
 
-        private void OnMqttServerClientUnsubscribedTopic(MqttServerClientUnsubscribedTopicEventArgs e)
+        private Task OnMqttServerClientUnsubscribedTopic(ClientUnsubscribedTopicEventArgs e)
         {
             Logger.LogInfo($"[MQTT Server]Client[{e.ClientId}] unsubcribed topic[{e.TopicFilter}].");
+            return Task.CompletedTask;
         }
 
-        private void OnMqttServer_ApplicationMessageReceived(MqttApplicationMessageReceivedEventArgs e)
+        private Task OnMqttServer_ApplicationMessageReceived(InterceptingPublishEventArgs e)
         {
             try
             {
-                string text = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                string text = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
                 string topic = e.ApplicationMessage.Topic;
                 string qoS = e.ApplicationMessage.QualityOfServiceLevel.ToString();
                 string retained = e.ApplicationMessage.Retain.ToString();
@@ -349,7 +364,7 @@ namespace Sunup.DataSource.MQTT
                     if (!string.IsNullOrEmpty(json))
                     {
                         this.DataSourceReference.DataSet = json;
-                        this.NotifyAll();
+                        Task.Run(() => this.NotifyAll());
                     }
                 }
             }
@@ -358,6 +373,8 @@ namespace Sunup.DataSource.MQTT
                 Logger.LogError("[MQTT Server]", exp);
                 Logger.LogTrace("[MQTT Server]", exp);
             }
+
+            return Task.CompletedTask;
         }
 
         private string ToJsonString(string topic, string payload)

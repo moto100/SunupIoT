@@ -69,7 +69,7 @@ namespace Sunup.InfluxDBConnection
 
             try
             {
-                this.influxDBClient = InfluxDBClientFactory.Create(this.connectionString, this.accessToken.ToCharArray());
+                this.influxDBClient = new InfluxDB.Client.InfluxDBClient(this.connectionString, this.accessToken);
                 this.writeApi = this.influxDBClient.GetWriteApiAsync();
                 Diagnostics.Logger.LogInfo($"[InfluxDBClient]Start >> Succeeded to create a InfluxDB client, connectionString : {this.connectionString} , organizationId : {this.organizationId} ,bucketName : {this.bucketName} ,measurement : {this.measurement} ,accessToken : {this.accessToken}.");
                 this.isStarted = true;
@@ -142,7 +142,7 @@ namespace Sunup.InfluxDBConnection
 
                     if (list.Count > 0)
                     {
-                        await this.writeApi.WritePointsAsync(this.bucketName, this.organizationId, list);
+                        await this.writeApi.WritePointsAsync(list, this.bucketName, this.organizationId);
                     }
                 }
                 catch (Exception ex)

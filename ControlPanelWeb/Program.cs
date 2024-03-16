@@ -10,6 +10,7 @@ namespace Sunup.ControlPanelWeb
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Server.Kestrel.Core;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Sunup.Diagnostics;
@@ -73,7 +74,10 @@ namespace Sunup.ControlPanelWeb
             AppId = "Sunup.ControlPanel";
             LogLevel = "Warning";
             InitalizeConfig();
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            Logger.MSLogger = loggerFactory.CreateLogger("Sunup");
+            host.Run();
         }
 
         /// <summary>

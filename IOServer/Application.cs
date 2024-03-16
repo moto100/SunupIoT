@@ -57,7 +57,7 @@ namespace Sunup.IOServer
                     return;
                 }
 
-                Hjs39d7Hssj9de.Yhkeh77Uhbeds(appId);
+                ////Hjs39d7Hssj9de.Yhkeh77Uhbeds(appId);
 
                 if (this.AppContainerModel != null)
                 {

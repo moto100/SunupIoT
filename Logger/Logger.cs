@@ -125,7 +125,7 @@ namespace Sunup.Diagnostics
                 {
                     if (listener != null)
                     {
-                        Task.Factory.StartNew(() =>
+                        Task.Run(() =>
                         {
                             listener.LogError(getMessage, exception);
                         });
@@ -156,7 +156,7 @@ namespace Sunup.Diagnostics
                 {
                     if (listener != null)
                     {
-                        Task.Factory.StartNew(() =>
+                        Task.Run(() =>
                         {
                             listener.LogWarning(getMessage, exception);
                         });
@@ -186,7 +186,7 @@ namespace Sunup.Diagnostics
                 {
                     if (listener != null)
                     {
-                        Task.Factory.StartNew(() =>
+                        Task.Run(() =>
                         {
                             listener.LogInfo(getMessage);
                         });
@@ -217,7 +217,7 @@ namespace Sunup.Diagnostics
                 {
                     if (listener != null)
                     {
-                        Task.Factory.StartNew(() =>
+                        Task.Run(() =>
                         {
                             listener.LogTrace(getMessage, exception);
                         });

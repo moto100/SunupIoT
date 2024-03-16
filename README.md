@@ -33,7 +33,7 @@ SunupIoT 是一款旨在解决各种IoT设备接入，数据收集，数据过�
 #### 使用说明
 
 1.  下载master分支代码，用VS2022打开Sunup.sln,编译整个解决方案。
-2.   配置日志数据库，在ControlPanelWeb\ControlPanelWeb_appsettings.config文件里有MSSQL数据库连接字符串， 按自己的配置更新它，并在数据库里运行DBScript\CreateDB.sql 生成日志表。
+2.  如需查看日志请参考《如何查看系统运行日志》配置数据库。
 3.  在VS2022中运行"ControlPanelWeb"项目，它会打开默认网页http://localhost:7001，默认用户名和密码是 sunup temptemp。
 4. 由于系统有个默认发布的应用，它会运行起来，记住它的网站地址。
 5.  在浏览器中打开应用的网站地址，如http://localhost:9001/，会看到《WebSocket Test Page》的默认页面，到此默认的例子程序就运行起来了。
@@ -43,10 +43,14 @@ SunupIoT 是一款旨在解决各种IoT设备接入，数据收集，数据过�
 1.  Sunup的前端是基于ng-alain中台实现的，这就需要从 https://github.com/moto100/ng-alain/tree/Sunup.ControlPanel （https://gitee.com/moto100/ng-alain/tree/Sunup.ControlPanel/） 下载前端代码，分支名是Sunup.ControlPanel。
 2.  在VSCode中打开前端代码Sunup.ControlPanel，编译Angular代码， 最后运行npm run start启动前端站点，此时会打开一个http://localhost:4200，它会默认直接链接到后端http://localhost:7001上获取数据。也可以编译发布版本，成功后把生成的文件拷贝到ControlPanelWeb的网站http://localhost:7001下的wwwroot文件夹下直接使用同一个站点。
 3.  在Sunup的前端页面上登入进去，默认用户名和密码是 sunup temptemp
-4.  这是也有一个demo APP在运行，其他如上面的使用说明的4-6。
+4.  这是也有一个demo APP在运行，其他步骤如上面的《使用说明》的4-6。
 
 #### 如何建一个新的APP
 1.  进入站点后点击《新建空应用》按钮新建一个空应用，不做任何改变，保存，再在该应用按钮中选择《导入应用》，导入[Sunup.sln所在文件夹下]SunupDemoApp\PlatformModel.json。再在该应用的下拉按钮中选择《发布运行》，等一会后该应用名前面会出现【已发布】和一个蓝色小点，它代表应用发布并运行起来了。
+#### 如何查看系统运行日志
+1.  系统使用log4net记录日志，默认使用MSSQL 数据库存储记录， 这时需要修改两个配置文件中的数据连接字符串--IOServerHost\IOServerHost_log4net.config 和 ControlPanelWeb\ControlPanelWeb_appsettings.config，并在数据库里运行DBScript\CreateDB.sql 生成日志表。
+#### 如何使用模拟数据测试
+1.  系统里有个模拟器设备，可以给应用提供模拟数据，并且数据会有规则变，字段类型 int, 名字为 “int{数字}”， 如 int1，int2,int3...。 这些int数据会随机变化,  字段类型 stepint, 名字为 “stepint{数字}”， 如 stepint1,stepint2...。 这些stepint数据会按步长递增到配置的最大数，之后下降到配置的最小数。字段类型 string, 名字为 “string{数字}”， 如 string1，string2,string3...。 这些string数据会随机变化。字段类型 bool, 名字为 “bool{数字}”， 如 bool1，bool2,bool3...。 这些bool数据会true/false 交替变化。
 
 #### 说明
 1.  IOGateway项目是一个发布后可以运行在树莓派4b（Ubantu系统）上的ModbusRTU转MQTT程序.

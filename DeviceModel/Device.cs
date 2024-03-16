@@ -5,6 +5,7 @@
 namespace Sunup.DeviceModel
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
@@ -23,6 +24,7 @@ namespace Sunup.DeviceModel
         private IList<IDataChange> dataChangeList;
         private Dictionary<string, dynamic> fieldValues;
         private Dictionary<string, dynamic> writtenValues;
+        private ConcurrentDictionary<string, IDataChange> fieldNotifications;
         private DataSource dataSource;
         private Script inScript;
         private Script outScript;
@@ -37,6 +39,7 @@ namespace Sunup.DeviceModel
             this.dataChangeList = new List<IDataChange>();
             this.fieldValues = new Dictionary<string, dynamic>();
             this.writtenValues = new Dictionary<string, dynamic>();
+            this.fieldNotifications = new ConcurrentDictionary<string, IDataChange>();
             this.Name = name;
             ////this.ReferenceType = ReferenceType.GlobalVariable;
             this.deviceReference = new DeviceReference(this, "Device");
@@ -224,7 +227,7 @@ namespace Sunup.DeviceModel
         /// <param name="value">value.</param>
         public void SetField(string fieldName, object value)
         {
-            if (string.IsNullOrEmpty(fieldName))
+            if (string.IsNullOrEmpty(fieldName) || value == null)
             {
                 return;
             }
@@ -239,6 +242,11 @@ namespace Sunup.DeviceModel
             this.fieldValues[field] = value;
             ////}
             ////this.deviceReference.SetField(fieldName, value);
+            this.fieldNotifications.TryGetValue(field, out IDataChange dataChange);
+            if (dataChange != null)
+            {
+                dataChange.OnDataChange();
+            }
         }
 
         /// <summary>
@@ -248,7 +256,7 @@ namespace Sunup.DeviceModel
         /// <param name="value">value.</param>
         public void SetWrittenField(string fieldName, object value)
         {
-            if (string.IsNullOrEmpty(fieldName))
+            if (string.IsNullOrEmpty(fieldName) || value == null)
             {
                 return;
             }
@@ -286,40 +294,7 @@ namespace Sunup.DeviceModel
                 {
                     try
                     {
-                        JObject jsonObject = JsonConvert.DeserializeObject<JObject>(this.dataSource.DataSourceReference.DataSet);
-                        foreach (var item in jsonObject)
-                        {
-                            var valueType = item.Value.Type;
-                            if (item.Value != null)
-                            {
-                                switch (valueType)
-                                {
-                                    case JTokenType.Integer:
-                                        changed = true;
-                                        this.SetField(item.Key, item.Value.Value<int>());
-                                        break;
-                                    case JTokenType.Float:
-                                        changed = true;
-                                        this.SetField(item.Key, item.Value.Value<float>());
-                                        break;
-                                    case JTokenType.Boolean:
-                                        changed = true;
-                                        this.SetField(item.Key, item.Value.Value<bool>());
-                                        break;
-                                    case JTokenType.String:
-                                        changed = true;
-                                        this.SetField(item.Key, item.Value.Value<string>());
-                                        break;
-                                    case JTokenType.Date:
-                                        changed = true;
-                                        this.SetField(item.Key, item.Value.Value<DateTime>());
-                                        break;
-                                }
-                            }
-                        }
-
-                        ////jsonObject = null;
-                        ////this.dataSource.DataSourceReference.DataSet = null;
+                        changed = this.ExtratValue();
                     }
                     catch (Exception ex)
                     {
@@ -334,39 +309,7 @@ namespace Sunup.DeviceModel
                 {
                     try
                     {
-                        JObject jsonObject = JsonConvert.DeserializeObject<JObject>(this.dataSource.DataSourceReference.DataSet);
-                        foreach (var item in jsonObject)
-                        {
-                            var valueType = item.Value.Type;
-                            if (item.Value != null)
-                            {
-                                switch (valueType)
-                                {
-                                    case JTokenType.Integer:
-                                        changed = true;
-                                        this.deviceReference.SetField(item.Key, item.Value.Value<int>());
-                                        break;
-                                    case JTokenType.Float:
-                                        changed = true;
-                                        this.deviceReference.SetField(item.Key, item.Value.Value<float>());
-                                        break;
-                                    case JTokenType.Boolean:
-                                        changed = true;
-                                        this.deviceReference.SetField(item.Key, item.Value.Value<bool>());
-                                        break;
-                                    case JTokenType.String:
-                                        changed = true;
-                                        this.deviceReference.SetField(item.Key, item.Value.Value<string>());
-                                        break;
-                                    case JTokenType.Date:
-                                        changed = true;
-                                        this.deviceReference.SetField(item.Key, item.Value.Value<DateTime>());
-                                        break;
-                                }
-                            }
-                        }
-
-                        jsonObject = null;
+                        changed = this.ExtratValue();
                     }
                     catch (Exception ex)
                     {
@@ -380,8 +323,6 @@ namespace Sunup.DeviceModel
                     this.InParser.Run();
                     changed = true;
                 }
-
-                ////this.dataSource.DataSourceReference.DataSet = null;
             }
 
             if (changed)
@@ -399,7 +340,7 @@ namespace Sunup.DeviceModel
             {
                 ////Task.Factory.StartNew(() =>
                 ////{
-                    this.dataSource.Run();
+                    this.dataSource.Start();
                 ////});
             }
         }
@@ -480,10 +421,10 @@ namespace Sunup.DeviceModel
         /// <param name="item">item.</param>
         public void WriteItem(WriteItem item)
         {
-            if (!License.IsLicenseValid)
-            {
-                return;
-            }
+            ////if (!License.IsLicenseValid)
+            ////{
+            ////    return;
+            ////}
 
             if (this.dataSource != null && this.dataSource.ValidateTobePublishedItem(item))
             {
@@ -503,19 +444,75 @@ namespace Sunup.DeviceModel
             }
         }
 
+        /// <summary>
+        /// AddFieldNotification.
+        /// </summary>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="notification">notification.</param>
+        public void AddFieldNotification(string fieldName, IDataChange notification)
+        {
+            if (string.IsNullOrEmpty(fieldName))
+            {
+                return;
+            }
+
+            var field = fieldName.ToUpper();
+
+            this.fieldNotifications[field] = notification;
+        }
+
         private void NotifyAll()
         {
-            var count = this.dataChangeList.Count;
-            for (int i = 0; i < count; i++)
+            ////var count = this.dataChangeList.Count;
+            ////for (int i = 0; i < count; i++)
+            ////{
+            ////    IDataChange dataChange = this.dataChangeList[i];
+            ////    if (dataChange != null)
+            ////    {
+            ////        Logger.LogTrace($"[Device]Notify devices proxy >> the device: {this.Name} have new changed data.");
+            ////        //// notify devices proxy to update data.
+            ////        dataChange.OnDataChange();
+            ////    }
+            ////}
+        }
+
+        private bool ExtratValue()
+        {
+            var changed = false;
+            JObject jsonObject = JsonConvert.DeserializeObject<JObject>(this.dataSource.DataSourceReference.DataSet);
+            foreach (var item in jsonObject)
             {
-                IDataChange dataChange = this.dataChangeList[i];
-                if (dataChange != null)
+                var valueType = item.Value.Type;
+                if (item.Value != null)
                 {
-                    Logger.LogTrace($"[Device]Notify devices proxy >> the device: {this.Name} have new changed data.");
-                    //// notify devices proxy to update data.
-                    dataChange.OnDataChange();
+                    switch (valueType)
+                    {
+                        case JTokenType.Integer:
+                            changed = true;
+                            this.SetField(item.Key, item.Value.Value<int>());
+                            break;
+                        case JTokenType.Float:
+                            changed = true;
+                            this.SetField(item.Key, item.Value.Value<float>());
+                            break;
+                        case JTokenType.Boolean:
+                            changed = true;
+                            this.SetField(item.Key, item.Value.Value<bool>());
+                            break;
+                        case JTokenType.String:
+                            changed = true;
+                            this.SetField(item.Key, item.Value.Value<string>());
+                            break;
+                        case JTokenType.Date:
+                            changed = true;
+                            this.SetField(item.Key, item.Value.Value<DateTime>());
+                            break;
+                    }
                 }
             }
+
+            jsonObject = null;
+            return changed;
         }
     }
 }

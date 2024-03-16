@@ -102,9 +102,11 @@ namespace Sunup.PlatformModel
         /// <param name="scriptString">scriptString.</param>
         /// <param name="dataChange">dataChange.</param>
         /// <param name="isHiden">isHiden.</param>
-        /// <param name="boundDevice">boundDevice.</param>
-        /// <param name="boundField">boundField.</param>
-        public void AddNode(string name, DataValue dafaultValue, string expressionString = null, string scriptString = null, IDataChange dataChange = null, bool isHiden = false, string boundDevice = null, string boundField = null)
+        /// <param name="inboundDevice">inboundDevice.</param>
+        /// <param name="inboundField">inboundField.</param>
+        /// <param name="outboundDevice">outboundDevice.</param>
+        /// <param name="outboundField">outboundField.</param>
+        public void AddNode(string name, DataValue dafaultValue, string expressionString = null, string scriptString = null, IDataChange dataChange = null, bool isHiden = false, string inboundDevice = null, string inboundField = null, string outboundDevice = null, string outboundField = null)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -116,6 +118,10 @@ namespace Sunup.PlatformModel
 
             var nameWithoutDot = name.Replace(" ", string.Empty).Replace(".", "__");
             var node = new Node(name, nameWithoutDot, dafaultValue);
+            if (!string.IsNullOrEmpty(inboundDevice) && !string.IsNullOrEmpty(inboundField))
+            {
+                expressionString = $"DevicesProxy.GetData('{inboundDevice}','{inboundField}')";
+            }
 
             if (!string.IsNullOrEmpty(expressionString))
             {
@@ -129,16 +135,28 @@ namespace Sunup.PlatformModel
                 node.Script = new Sunup.ScriptLibrary.Script(scriptString);
             }
 
-            if (!string.IsNullOrEmpty(boundDevice))
+            if (!string.IsNullOrEmpty(inboundDevice))
             {
-                Logger.LogInfo($"[AppContainer]Create a node >>Name: {name} , BoundDevice: {boundDevice}.");
-                node.BoundDevice = boundDevice;
+                Logger.LogInfo($"[AppContainer]Create a node >>Name: {name} , inboundDevice: {inboundDevice}.");
+                node.InboundDevice = inboundDevice;
             }
 
-            if (!string.IsNullOrEmpty(boundField))
+            if (!string.IsNullOrEmpty(inboundField))
             {
-                Logger.LogInfo($"[AppContainer]Create a node >>Name: {name} , BoundField: {boundField}.");
-                node.BoundField = boundField;
+                Logger.LogInfo($"[AppContainer]Create a node >>Name: {name} , inboundField: {inboundField}.");
+                node.InboundField = inboundField;
+            }
+
+            if (!string.IsNullOrEmpty(outboundDevice))
+            {
+                Logger.LogInfo($"[AppContainer]Create a node >>Name: {name} , outboundDevice: {outboundDevice}.");
+                node.OutboundDevice = outboundDevice;
+            }
+
+            if (!string.IsNullOrEmpty(outboundField))
+            {
+                Logger.LogInfo($"[AppContainer]Create a node >>Name: {name} , outboundField: {outboundField}.");
+                node.OutboundField = outboundField;
             }
 
             if (dataChange != null)
@@ -208,13 +226,17 @@ namespace Sunup.PlatformModel
                         referenceList.Add(this.DevicesProxy.DevicesProxyReference);
                         Logger.LogInfo($"[AppContainer]Build node >>Name: {node.Name}, Add devices proxy reference list for its expression.");
 
-                        Dictionary<string, Device> devices = this.DevicesProxy.Devices;
-
-                        foreach (var device in devices.Values)
+                        if (!string.IsNullOrEmpty(node.InboundDevice) && !string.IsNullOrEmpty(node.InboundField))
                         {
-                            ////device.DeviceReference.ReferenceName = device.Name;
-                            referenceList.Add(device.DeviceReference);
+                            this.DevicesProxy.AddDeviceNotification(node.InboundDevice, node.InboundField, node.Expression);
                         }
+                        ////Dictionary<string, Device> devices = this.DevicesProxy.Devices;
+
+                        ////foreach (var device in devices.Values)
+                        ////{
+                        ////    ////device.DeviceReference.ReferenceName = device.Name;
+                        ////    referenceList.Add(device.DeviceReference);
+                        ////}
                     }
 
                     node.Expression.ReferenceList = referenceList;
@@ -253,13 +275,13 @@ namespace Sunup.PlatformModel
                         referenceList.Add(this.DevicesProxy.DevicesProxyReference);
                         Logger.LogInfo($"[AppContainer]Build node >>Name: {node.Name}, Add devices proxy reference list for its script.");
 
-                        Dictionary<string, Device> devices = this.DevicesProxy.Devices;
+                        ////Dictionary<string, Device> devices = this.DevicesProxy.Devices;
 
-                        foreach (var device in devices.Values)
-                        {
-                            ////device.DeviceReference.ReferenceName = device.Name;
-                            referenceList.Add(device.DeviceReference);
-                        }
+                        ////foreach (var device in devices.Values)
+                        ////{
+                        ////    ////device.DeviceReference.ReferenceName = device.Name;
+                        ////    referenceList.Add(device.DeviceReference);
+                        ////}
                     }
 
                     node.Script.ScriptContent = transformedScript;
@@ -349,19 +371,19 @@ namespace Sunup.PlatformModel
                 if (this.nodes.ContainsKey(temp))
                 {
                     var node = this.nodes[temp];
-                    if (string.IsNullOrEmpty(node.BoundDevice))
+                    if (string.IsNullOrEmpty(node.OutboundDevice))
                     {
                         Logger.LogWarning($"[AppContainer]Try to write data to device >>Device name is null or empty.");
                         return;
                     }
 
-                    if (string.IsNullOrEmpty(node.BoundField))
+                    if (string.IsNullOrEmpty(node.OutboundField))
                     {
                         Logger.LogWarning($"[AppContainer]Try to write data to device >>Field name is null or empty.");
                         return;
                     }
 
-                    if (!string.IsNullOrEmpty(node.BoundDevice) && !string.IsNullOrEmpty(node.BoundField))
+                    if (!string.IsNullOrEmpty(node.OutboundDevice) && !string.IsNullOrEmpty(node.OutboundField))
                     {
                         object val = null;
                         switch (node.DataValue.DataType)
@@ -411,8 +433,8 @@ namespace Sunup.PlatformModel
                         if (val != null)
                         {
                             var item = new WriteItem() { Name = name, Value = val };
-                            item.BoundDevice = node.BoundDevice;
-                            item.BoundField = node.BoundField;
+                            item.BoundDevice = node.OutboundDevice;
+                            item.BoundField = node.OutboundField;
                             this.devicesProxy.WriteItem(item);
                         }
                         else

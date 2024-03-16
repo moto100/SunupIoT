@@ -40,11 +40,14 @@ namespace Sunup.ScriptExecutor
             this.references = references;
         }
 
-        /// <summary>
-        /// Execute script.
-        /// </summary>
-        /// <param name="script">Script content.</param>
-        public void Execute(string script)
+        /// <inheritdoc/>
+        public void Evaluate(string script, bool force = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public void Execute(string script, bool force = false)
         {
             ////if (this.scriptMethod == null)
             ////{

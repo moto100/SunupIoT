@@ -21,7 +21,7 @@ namespace Sunup.ControlPanel
         public static bool Init(string appPath)
         {
             ////Diagnostics.Logger.LogTrace($"[Control Panel]Init >> try to start deployed app.");
-            Task.Factory.StartNew(() =>
+            Task.Run(() =>
             {
                 var con = new Connection("<<A virtual connection>>");
                 con.StartDeployedProjects();

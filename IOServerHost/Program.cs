@@ -10,6 +10,7 @@ namespace Sunup.IOServerHost
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Server.Kestrel.Core;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Sunup.Diagnostics;
@@ -19,6 +20,8 @@ namespace Sunup.IOServerHost
     /// </summary>
     public class Program
     {
+        private static IConfiguration configuration;
+
         /// <summary>
         /// Gets a value indicating whether EnableHttps.
         /// </summary>
@@ -81,7 +84,10 @@ namespace Sunup.IOServerHost
                 ProcessArgs(args);
             }
 
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            Logger.MSLogger = loggerFactory.CreateLogger("Sunup");
+            host.Run();
         }
 
         /// <summary>
@@ -93,13 +99,20 @@ namespace Sunup.IOServerHost
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, configurationBuilder) =>
                 {
-                    configurationBuilder.AddJsonFile("IOServerHost_appsettings.json", optional: true, reloadOnChange: true);
+                    if (configuration == null)
+                    {
+                        configurationBuilder.AddJsonFile("IOServerHost_appsettings.json", optional: true, reloadOnChange: true);
+                    }
+                    else
+                    {
+                        configurationBuilder.AddConfiguration(configuration);
+                    }
                 })
                 .ConfigureLogging(loggngBuilder =>
                 {
                     loggngBuilder.ClearProviders();
                     var level = Microsoft.Extensions.Logging.LogLevel.Warning;
-                    Enum.TryParse<Microsoft.Extensions.Logging.LogLevel>(LogLevel, true, out level);
+                    Enum.TryParse(LogLevel, true, out level);
                     loggngBuilder.AddFilter("Default", level);
                     loggngBuilder.AddFilter("Microsoft", level);
                     loggngBuilder.AddFilter("Microsoft.Hosting.Lifetime", level);
@@ -235,7 +248,7 @@ namespace Sunup.IOServerHost
         {
             var builder = new ConfigurationBuilder()
             .AddJsonFile("IOServerHost_appsettings.json", optional: true, reloadOnChange: true);
-            var configuration = builder.Build();
+            configuration = builder.Build();
 
             var defaultAppPath = configuration.GetValue<string>("appSettings:DefaultAppPath");
             BasePath = defaultAppPath;

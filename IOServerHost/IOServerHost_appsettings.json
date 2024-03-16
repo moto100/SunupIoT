@@ -1,7 +1,7 @@
 {
   "appSettings": {
     "ListenOn": "http://localhost:9001,https://localhost",
-    "DefaultAppPath": "C:/SunupDemoApp/"
+    "DefaultAppPath": "D:\\Sunup\\bin\\Debug\\net8.0\\deployedApps\\Demo"
   },
   "HTTPS": {
     "Enable": true,

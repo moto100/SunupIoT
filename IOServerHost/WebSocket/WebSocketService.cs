@@ -36,7 +36,7 @@ namespace Sunup.IOServerHost
                 return;
             }
 
-            var socket = await httpContext.WebSockets.AcceptWebSocketAsync();
+            var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
 
             var webSocket = WebSocketManager.CreateWebSocketProxy(socket, httpContext);
             Diagnostics.Logger.LogInfo($"[WebSocket Service]Create WebSocketProxy.");

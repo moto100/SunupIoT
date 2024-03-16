@@ -6,6 +6,7 @@ namespace Sunup.DataSource
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Sunup.Contract;
     using Sunup.ScriptExecutor;
 
@@ -80,7 +81,7 @@ namespace Sunup.DataSource
         /// <summary>
         /// Run.
         /// </summary>
-        public virtual void Run()
+        public virtual void Start()
         {
             this.NotifyAll();
         }

@@ -7,6 +7,10 @@
   #4. zlan 5144J(ModbusToMQTT), 9743(ModbusToMQTT RF 433)
   #5. Google Chrome.
 
-    Source => device => device proxy=>container(run expressions) => data collector => container wrapper =>
+    Source => device => device proxy=>node.expression.OnDataChange() => node.expression(run) =>node.script(run) => node.notifyall =>nodecontainer.AddChangedData() === nodecontainer.execute(timer)=>
+ appcontainer.OnDataChange() (appcontainer.writeInfluxDB)=>subscription.OnDataChange()===subscription.execute(timer)=>subscription.DataChangeCallback(connecntion) =>connection.OnDataChange(in connection.asyncAction.cs)=>connection.Callback(in IOServerAgent.cs)=>
+WebSocketProxy.
+
+data collector => container wrapper =>
 	subscription=> connection(session) => WebSocketProxy(session)
   

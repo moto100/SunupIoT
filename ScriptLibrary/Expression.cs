@@ -77,7 +77,7 @@ namespace Sunup.ScriptLibrary
 
             if (this.ScriptExecutor != null)
             {
-                this.ScriptExecutor.Execute();
+                this.ScriptExecutor.Evaluate();
             }
 
             this.InternalRun();
@@ -119,6 +119,7 @@ namespace Sunup.ScriptLibrary
         {
             if (this.ScriptExecutor != null)
             {
+                this.ScriptExecutor.Evaluate();
                 return this.ScriptExecutor.GetValue();
             }
             else

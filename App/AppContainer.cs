@@ -29,7 +29,7 @@ namespace Sunup.App
         private ConcurrentDictionary<string, VTQ> lastVTQSet;
         private object dataLock = new object();
         private NodeContainer nodeContainer;
-        private int currentNodeNumber = 0;
+        ////private int currentNodeNumber = 0;
         private InfluxDBClient influxDBClient;
         private List<string> storedNodes;
         private bool enableInfluxDB = false;
@@ -61,7 +61,7 @@ namespace Sunup.App
             this.containerDataChanges.Add(containerDataChange);
 
             //// send initial data to containerdatachange instance like subscription when this method be called.
-            Task.Factory.StartNew(() =>
+            Task.Run(() =>
             {
                 lock (this.dataLock)
                 {
@@ -285,7 +285,7 @@ namespace Sunup.App
                     for (var i = 0; i < count; i++)
                     {
                         var change = this.containerDataChanges[i];
-                        Task.Factory.StartNew(() =>
+                        Task.Run(() =>
                         {
                             change.OnDataChange(changedObject);
                         });
@@ -295,7 +295,7 @@ namespace Sunup.App
 
             if (this.enableInfluxDB && this.storedNodes.Count > 0 && this.influxDBClient != null && this.influxDBClient.IsStarted)
             {
-                Task task = Task.Factory.StartNew(() =>
+                Task.Run(async () =>
                 {
                     List<VTQ> list = new List<VTQ>();
                     for (int i = 0; i < changedObject.Count; i++)
@@ -306,12 +306,10 @@ namespace Sunup.App
                         }
                     }
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     if (list.Count > 0)
                     {
-                        this.influxDBClient.WriteObject(list.ToArray());
+                        await this.influxDBClient.WriteObject(list.ToArray());
                     }
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 });
            }
         }
@@ -371,14 +369,14 @@ namespace Sunup.App
         {
             foreach (var node in token)
             {
-                if (this.currentNodeNumber >= License.DataPointNumber)
-                {
-                    return;
-                }
-                else
-                {
-                    this.currentNodeNumber++;
-                }
+                ////if (this.currentNodeNumber >= License.DataPointNumber)
+                ////{
+                ////    return;
+                ////}
+                ////else
+                ////{
+                ////    this.currentNodeNumber++;
+                ////}
 
                 var name = node.Value<string>("Name");
                 var prefixWithName = prefix + "." + name;
@@ -475,9 +473,11 @@ namespace Sunup.App
 
                 var expression = node.Value<string>("Expression");
                 var script = node.Value<string>("Action");
-                var boundDevice = node.Value<string>("BoundDevice");
-                var boundField = node.Value<string>("BoundField");
-                businessContainer.AddNode(prefixWithName, new DataValue(dataValue, dataValueType), expression, script, null, isHiden, boundDevice, boundField);
+                var inboundDevice = node.Value<string>("InboundDevice");
+                var inboundField = node.Value<string>("InboundField");
+                var outboundDevice = node.Value<string>("OutboundDevice");
+                var outboundField = node.Value<string>("OutboundField");
+                businessContainer.AddNode(prefixWithName, new DataValue(dataValue, dataValueType), expression, script, null, isHiden, inboundDevice, inboundField, outboundDevice, outboundField);
 
                 var nodes = node["Nodes"];
                 if (nodes != null)

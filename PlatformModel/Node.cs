@@ -8,7 +8,6 @@ namespace Sunup.PlatformModel
     using System.Collections.Generic;
     using Sunup.Contract;
     using Sunup.Diagnostics;
-    using Sunup.ScriptExecutor;
     using Sunup.ScriptLibrary;
 
     /// <summary>
@@ -60,14 +59,24 @@ namespace Sunup.PlatformModel
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets bound field.
+        /// Gets or sets inbound field.
         /// </summary>
-        public string BoundField { get; set; }
+        public string InboundField { get; set; }
 
         /// <summary>
-        /// Gets or sets bound device.
+        /// Gets or sets inbound device.
         /// </summary>
-        public string BoundDevice { get; set; }
+        public string InboundDevice { get; set; }
+
+        /// <summary>
+        /// Gets or sets outbound field.
+        /// </summary>
+        public string OutboundField { get; set; }
+
+        /// <summary>
+        /// Gets or sets outbound device.
+        /// </summary>
+        public string OutboundDevice { get; set; }
 
         /// <summary>
         /// Gets reference.

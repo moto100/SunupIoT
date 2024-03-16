@@ -6,8 +6,8 @@ namespace Sunup.ScriptExecutor
 {
     using System;
     using System.Collections.Generic;
-    using Jint.Parser;
-    using Jint.Parser.Ast;
+    using Esprima;
+    using Esprima.Ast;
 
     /// <summary>
     /// JintScriptParser.
@@ -37,7 +37,7 @@ namespace Sunup.ScriptExecutor
         /// <returns>Program tree.</returns>
         public Program Parse(string code)
         {
-            return this.parser.Parse(code);
+            return this.parser.ParseScript(code);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Sunup.ScriptExecutor
         /// <param name="program">program.</param>
         public void ExtractVaribale(Program program)
         {
-            if (program == null || program.Body == null || program.Body.Count == 0)
+            if (program == null || program.Body.Count == 0)
             {
                 return;
             }

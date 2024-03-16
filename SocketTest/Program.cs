@@ -15,7 +15,7 @@ namespace SocketTest
                 ReceiveBufferSize = 1024
             };
             var server = new SocketServer("socketTest", options);
-            server.Run();
+            server.Start();
             Console.WriteLine("Start to accept connection...");
             Console.ReadLine();
         }

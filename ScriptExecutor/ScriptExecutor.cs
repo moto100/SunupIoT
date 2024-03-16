@@ -48,6 +48,21 @@ namespace Sunup.ScriptExecutor
         }
 
         /// <summary>
+        /// Evaluate script.
+        /// </summary>
+        public void Evaluate()
+        {
+            try
+            {
+               this.engine.Evaluate(this.scriptContent);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"[Script Executor]Exception happen on Execution >>Script: {this.scriptContent}.", ex);
+            }
+        }
+
+        /// <summary>
         /// Get complition value.
         /// </summary>
         /// <returns>Value of result.</returns>
@@ -55,7 +70,7 @@ namespace Sunup.ScriptExecutor
         {
             try
             {
-               return this.engine.GetValue();
+                return this.engine.GetValue();
             }
             catch (Exception ex)
             {

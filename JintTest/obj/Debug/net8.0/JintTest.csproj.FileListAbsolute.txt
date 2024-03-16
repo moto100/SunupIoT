@@ -1,0 +1,16 @@
+D:\Sunup\bin\Debug\net8.0\JintTest.exe
+D:\Sunup\bin\Debug\net8.0\JintTest.deps.json
+D:\Sunup\bin\Debug\net8.0\JintTest.runtimeconfig.json
+D:\Sunup\bin\Debug\net8.0\JintTest.dll
+D:\Sunup\bin\Debug\net8.0\JintTest.pdb
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.csproj.AssemblyReference.cache
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.GeneratedMSBuildEditorConfig.editorconfig
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.AssemblyInfoInputs.cache
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.AssemblyInfo.cs
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.csproj.CoreCompileInputs.cache
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.csproj.Up2Date
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.dll
+D:\Sunup\JintTest\obj\Debug\net8.0\refint\JintTest.dll
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.pdb
+D:\Sunup\JintTest\obj\Debug\net8.0\JintTest.genruntimeconfig.cache
+D:\Sunup\JintTest\obj\Debug\net8.0\ref\JintTest.dll

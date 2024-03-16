@@ -72,8 +72,8 @@ namespace Sunup.IOServerHost
         {
             var basepath = Program.BasePath;
             var appId = Program.AppId;
-            var logger = loggerFactory.CreateLogger(appId);
-            Logger.MSLogger = logger;
+            ////var logger = loggerFactory.CreateLogger(appId);
+            ////Logger.MSLogger = logger;
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

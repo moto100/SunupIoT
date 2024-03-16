@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "NCDEjnVVsyWkon7Ku4AdMdMtDwT4cLu/lLx9x3oKbfVnI53hf4chdZ8+RbwUOz1UNQGV173kqJnO+gIGEB5jOw==",
+  "success": true,
+  "projectFilePath": "D:\\Sunup\\JintTest\\JintTest.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Felix\\.nuget\\packages\\esprima\\3.0.4\\esprima.3.0.4.nupkg.sha512",
+    "C:\\Users\\Felix\\.nuget\\packages\\jint\\3.0.1\\jint.3.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

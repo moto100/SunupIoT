@@ -1,0 +1,152 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "Esprima/3.0.4": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/Esprima.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.1/Esprima.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Jint/3.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Esprima": "3.0.4"
+        },
+        "compile": {
+          "lib/net8.0/Jint.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Jint.dll": {
+            "related": ".xml"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Esprima/3.0.4": {
+      "sha512": "AIK0TpWPL/IvMX7tGq7CT486N8IG2XXtpZJYedJ+mjutUAFYRZaQjalaN7xiaV++cTMGyhc5bfK7Z8+qMfjh0w==",
+      "type": "package",
+      "path": "esprima/3.0.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "esprima.3.0.4.nupkg.sha512",
+        "esprima.nuspec",
+        "lib/net462/Esprima.dll",
+        "lib/net462/Esprima.xml",
+        "lib/netstandard2.0/Esprima.dll",
+        "lib/netstandard2.0/Esprima.xml",
+        "lib/netstandard2.1/Esprima.dll",
+        "lib/netstandard2.1/Esprima.xml"
+      ]
+    },
+    "Jint/3.0.1": {
+      "sha512": "X/aIRNWP1aDDt4Gw5yNNIp1qUMTaJIBNAMANCSWAoJtN1OSlLTkr0NuCjc7nLPx6TKwxybl4Rs1Tgd5va7yNrw==",
+      "type": "package",
+      "path": "jint/3.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "jint.3.0.1.nupkg.sha512",
+        "jint.nuspec",
+        "lib/net462/Jint.dll",
+        "lib/net462/Jint.xml",
+        "lib/net6.0/Jint.dll",
+        "lib/net6.0/Jint.xml",
+        "lib/net8.0/Jint.dll",
+        "lib/net8.0/Jint.xml",
+        "lib/netstandard2.0/Jint.dll",
+        "lib/netstandard2.0/Jint.xml",
+        "lib/netstandard2.1/Jint.dll",
+        "lib/netstandard2.1/Jint.xml"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "Jint >= 3.0.1"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Felix\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "D:\\Sunup\\JintTest\\JintTest.csproj",
+      "projectName": "JintTest",
+      "projectPath": "D:\\Sunup\\JintTest\\JintTest.csproj",
+      "packagesPath": "C:\\Users\\Felix\\.nuget\\packages\\",
+      "outputPath": "D:\\Sunup\\JintTest\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\Felix\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "dependencies": {
+          "Jint": {
+            "target": "Package",
+            "version": "[3.0.1, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

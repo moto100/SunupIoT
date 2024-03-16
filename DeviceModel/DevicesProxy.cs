@@ -82,7 +82,34 @@ namespace Sunup.DeviceModel
                 return device.GetValue(fieldName);
             }
 
+            Logger.LogTrace($"[Devices Proxy]Failed to get data from device >>Device name: {deviceName}, Field name: {fieldName}.");
+
             return null;
+        }
+
+        /// <summary>
+        /// Add Device.
+        /// </summary>
+        /// <param name="deviceName">deviceName.</param>
+        /// <param name="fieldName">fieldName.</param>
+        /// <param name="notification">notification.</param>
+        public void AddDeviceNotification(string deviceName, string fieldName, IDataChange notification)
+        {
+            if (string.IsNullOrEmpty(deviceName))
+            {
+                Logger.LogWarning($"[Devices Proxy]Try to add notification to device >>Device name is null or empty.");
+            }
+
+            if (string.IsNullOrEmpty(fieldName))
+            {
+                Logger.LogWarning($"[Devices Proxy]Try to add notification to device >>Field name is null or empty.");
+            }
+
+            var device = this.GetDevice(deviceName);
+            if (device != null)
+            {
+                device.AddFieldNotification(fieldName, notification);
+            }
         }
 
         /// <summary>
@@ -168,7 +195,7 @@ namespace Sunup.DeviceModel
         /// </summary>
         public void OnDataChange()
         {
-            //// get notification from device, and then notify container.
+            //// get notification from device, and then notify node container.
             Logger.LogTrace($"[Devices Proxy]Got Notification from devices>> the device: have new changed data.");
             this.Notify();
         }
@@ -228,6 +255,7 @@ namespace Sunup.DeviceModel
         {
             if (this.notification != null)
             {
+                //// get notification from device, and then notify node container.
                 this.notification.OnDataChange();
             }
         }

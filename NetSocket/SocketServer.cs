@@ -154,7 +154,7 @@ namespace Sunup.DataSource.NetSocket
         /// <summary>
         /// Run data source.
         /// </summary>
-        public override void Run()
+        public override void Start()
         {
             try
             {

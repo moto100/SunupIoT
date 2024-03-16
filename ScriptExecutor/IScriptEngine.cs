@@ -16,7 +16,15 @@ namespace Sunup.ScriptExecutor
         /// Execute script.
         /// </summary>
         /// <param name="script">Script content.</param>
-        void Execute(string script);
+        /// <param name="force">force to run script.</param>
+        void Execute(string script, bool force = false);
+
+        /// <summary>
+        /// Evaluate script.
+        /// </summary>
+        /// <param name="script">Script content.</param>
+        /// <param name="force">force to run script.</param>
+        void Evaluate(string script, bool force = false);
 
         /// <summary>
         /// Add references.

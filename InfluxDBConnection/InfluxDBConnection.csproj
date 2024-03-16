@@ -5,7 +5,7 @@
 	</PropertyGroup>
   <Import Project="$(SolutionDir)Shared\Sunup.NetStandard.targets" />
   <ItemGroup>
-    <PackageReference Include="InfluxDB.Client" Version="2.1.0" />
+    <PackageReference Include="InfluxDB.Client" Version="4.14.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Logger\Diagnostics.csproj" />

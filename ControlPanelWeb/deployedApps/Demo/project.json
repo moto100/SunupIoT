@@ -26,8 +26,8 @@
               "IsStored": false,
               "Expression": "DevicesProxy.GetData('Simulator-1','bool1')",
               "Action": null,
-              "BoundDevice": null,
-              "BoundField": null,
+              "InboundDevice": null,
+              "InboundField": null,
               "Nodes": []
             },
             {
@@ -36,10 +36,12 @@
               "ValueType": 1,
               "IsHiden": false,
               "IsStored": false,
-              "Expression": "DevicesProxy.GetData('Simulator-1','int1')",
+              "Expression": "",
               "Action": null,
-              "BoundDevice": "MQTTServer1",
-              "BoundField": "Shidu",
+              "InboundDevice": "Simulator-1",
+              "InboundField": "int1",
+              "OutboundDevice": "Simulator-1",
+              "OutboundField": "int1",
               "Nodes": []
             },
             {
@@ -48,10 +50,12 @@
               "ValueType": 1,
               "IsHiden": false,
               "IsStored": false,
-              "Expression": "DevicesProxy.GetData('Simulator-1','int2')",
+              "Expression": "",
               "Action": null,
-              "BoundDevice": "MQTTServer1",
-              "BoundField": "Shidu",
+              "InboundDevice": "Simulator-1",
+              "InboundField": "int2",
+              "OutboundDevice": "Simulator-1",
+              "OutboundField": "int2",
               "Nodes": []
             },
             {

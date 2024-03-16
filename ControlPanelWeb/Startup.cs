@@ -70,8 +70,8 @@ namespace Sunup.ControlPanelWeb
         /// <param name="loggerFactory">loggerFactory.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            var logger = loggerFactory.CreateLogger("Sunup");
-            Logger.MSLogger = logger;
+            ////var logger = loggerFactory.CreateLogger("Sunup");
+            ////Logger.MSLogger = logger;
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

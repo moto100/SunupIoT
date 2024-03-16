@@ -53,7 +53,7 @@ namespace Sunup.DataSource.Simulator
         /// <summary>
         /// Run data source.
         /// </summary>
-        public override void Run()
+        public override void Start()
         {
             this.StartExecutionTimer();
         }

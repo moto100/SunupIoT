@@ -177,7 +177,7 @@ namespace Sunup.IOServer
             if (serverCallback != null)
             {
                 connection.Callback = serverCallback;
-                await connection.ProcessAyncRequest(request);
+                await connection.ProcessRequestAync(request);
                 return;
             }
         }

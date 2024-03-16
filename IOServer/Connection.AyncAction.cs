@@ -46,7 +46,7 @@ namespace Sunup.IOServer
         /// </summary>
         /// <param name="request">request.</param>
         /// <returns>representing the asynchronous operation.</returns>
-        public Task ProcessAyncRequest(string request)
+        public Task ProcessRequestAync(string request)
         {
             return Task.Run(() =>
             {
