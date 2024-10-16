@@ -257,7 +257,7 @@ namespace Sunup.DataSource.MQTT
                                 return Task.CompletedTask;
                             }
                         }
-                        else if (this.SercurityMode == SercurityMode.WhithList)
+                        else if (this.SercurityMode == SercurityMode.WhiteList)
                         {
                             if (this.ClientAccessList != null)
                             {

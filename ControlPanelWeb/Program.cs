@@ -73,7 +73,6 @@ namespace Sunup.ControlPanelWeb
         {
             AppId = "Sunup.ControlPanel";
             LogLevel = "Warning";
-            InitalizeConfig();
             var host = CreateHostBuilder(args).Build();
             var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
             Logger.MSLogger = loggerFactory.CreateLogger("Sunup");
@@ -87,25 +86,24 @@ namespace Sunup.ControlPanelWeb
         /// <returns>IWebHostBuilder.</returns>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, configurationBuilder) =>
-                {
-                    configurationBuilder.AddJsonFile("ControlPanelWeb_appsettings.json", optional: true, reloadOnChange: true);
-                })
-                .ConfigureLogging(loggngBuilder =>
-                {
-                    loggngBuilder.ClearProviders();
-                    var level = Microsoft.Extensions.Logging.LogLevel.Warning;
-                    Enum.TryParse<Microsoft.Extensions.Logging.LogLevel>(LogLevel, true, out level);
-                    loggngBuilder.AddFilter("Default", level);
-                    loggngBuilder.AddFilter("Microsoft", level);
-                    loggngBuilder.AddFilter("Microsoft.Hosting.Lifetime", level);
-                    loggngBuilder.AddFilter("System", level);
-                    loggngBuilder.AddFilter(AppId, level);
-                    loggngBuilder.AddLog4Net("ControlPanelWeb_log4net.config");
-                })
                 ////.UseWindowsService()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureAppConfiguration((hostingContext, configurationBuilder) =>
+                      {
+                          configurationBuilder.AddJsonFile("ControlPanelWeb_appsettings.json", optional: true, reloadOnChange: true);
+                      })
+                    .ConfigureLogging(loggngBuilder =>
+                        {
+                            loggngBuilder.ClearProviders();
+                            var level = Microsoft.Extensions.Logging.LogLevel.Warning;
+                            Enum.TryParse<Microsoft.Extensions.Logging.LogLevel>(LogLevel, true, out level);
+                            loggngBuilder.AddFilter("Default", level);
+                            loggngBuilder.AddFilter("Microsoft", level);
+                            loggngBuilder.AddFilter("Microsoft.Hosting.Lifetime", level);
+                            loggngBuilder.AddFilter("System", level);
+                            loggngBuilder.AddLog4Net("ControlPanelWeb_log4net.config");
+                        });
                     var currentPath = System.AppDomain.CurrentDomain.BaseDirectory;
                     webBuilder.UseWebRoot(Path.Combine(currentPath, "wwwroot"));
                     if (!string.IsNullOrEmpty(Urls))
@@ -118,69 +116,7 @@ namespace Sunup.ControlPanelWeb
                         }
                     }
 
-                    if (EnableHttps && !string.IsNullOrEmpty(Certificate) && !string.IsNullOrEmpty(CertificatePWD))
-                    {
-                        webBuilder.ConfigureKestrel((context, serverOptions) =>
-                      {
-                          serverOptions.ConfigureHttpsDefaults(configureOption =>
-                          {
-                              configureOption.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(Path.Combine(currentPath, Certificate), CertificatePWD);
-                          });
-                      });
-                    }
-
                     webBuilder.UseStartup<Startup>();
                 });
-
-        private static void InitalizeConfig()
-        {
-            var builder = new ConfigurationBuilder()
-            .AddJsonFile("ControlPanelWeb_appsettings.json", optional: true, reloadOnChange: true);
-            var configuration = builder.Build();
-
-            var defaultAppPath = configuration.GetValue<string>("appSettings:DefaultAppPath");
-            BasePath = defaultAppPath;
-            Urls = configuration.GetValue<string>("appSettings:ListenOn");
-
-            EnableHttps = configuration.GetValue<bool>("HTTPS:Enable");
-            Certificate = configuration.GetValue<string>("HTTPS:Certificate");
-
-            CertificatePWD = configuration.GetValue<string>("HTTPS:CertificatePWD");
-
-            ////HttpsPort = configuration.GetValue<int>("HTTPS:HttpsPort");
-
-            ControlPanel.Config.DbConnectionString = configuration.GetConnectionString("DbConnection");
-            ////var enableLogTrace = configuration.GetValue<bool>("log:EnableLogTrace");
-            ////Logger.EnableLogTrace = enableLogTrace;
-            ////var enableLogError = configuration.GetValue<bool>("log:EnableLogError");
-            ////Logger.EnableLogError = enableLogError;
-            ////var enableLogInfo = configuration.GetValue<bool>("log:EnableLogInfo");
-            ////Logger.EnableLogInfo = enableLogInfo;
-            ////var enableLogWarning = configuration.GetValue<bool>("log:EnableLogWarning");
-            ////Logger.EnableLogWarning = enableLogWarning;
-            ////var enableConsoleLog = configuration.GetValue<bool>("log:ConsoleListener:Enable");
-            ////if (enableConsoleLog)
-            ////{
-            ////    IListener listener = new ConsoleListener();
-            ////    listener.EnableLogTrace = configuration.GetValue<bool>("log:ConsoleListener:EnableLogTrace");
-            ////    listener.EnableLogError = configuration.GetValue<bool>("log:ConsoleListener:EnableLogError");
-            ////    listener.EnableLogInfo = configuration.GetValue<bool>("log:ConsoleListener:EnableLogInfo");
-            ////    listener.EnableLogWarning = configuration.GetValue<bool>("log:ConsoleListener:EnableLogWarning");
-            ////    ListenerManager.Instance.AddListener("ConsoleListener", listener);
-            ////    listener.Start();
-            ////}
-
-            ////var enableFileLog = configuration.GetValue<bool>("log:FileListener:Enable");
-            ////if (enableFileLog)
-            ////{
-            ////    IListener listener = new FileListener(defaultAppPath);
-            ////    listener.EnableLogTrace = configuration.GetValue<bool>("log:FileListener:EnableLogTrace");
-            ////    listener.EnableLogError = configuration.GetValue<bool>("log:FileListener:EnableLogError");
-            ////    listener.EnableLogInfo = configuration.GetValue<bool>("log:FileListener:EnableLogInfo");
-            ////    listener.EnableLogWarning = configuration.GetValue<bool>("log:FileListener:EnableLogWarning");
-            ////    ListenerManager.Instance.AddListener("FileListener", listener);
-            ////    listener.Start();
-            ////}
-        }
     }
 }

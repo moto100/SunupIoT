@@ -20,9 +20,9 @@ namespace Sunup.DataSource
         None = 1,
 
         /// <summary>
-        /// WhithList
+        /// WhiteList
         /// </summary>
-        WhithList = 2,
+        WhiteList = 2,
 
         /// <summary>
         /// BlackList

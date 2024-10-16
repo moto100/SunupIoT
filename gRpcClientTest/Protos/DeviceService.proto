@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "DataServer";
+
+package Device;
+
+service Device {
+  rpc DeviceControl (stream Request) returns (stream Response);
+}
+
+message Request {
+  string Data = 1;
+}
+
+message Response {
+  string Data = 1;
+}

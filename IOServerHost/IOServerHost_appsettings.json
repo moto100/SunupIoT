@@ -1,11 +1,25 @@
 {
   "appSettings": {
-    "ListenOn": "http://localhost:9001,https://localhost",
     "DefaultAppPath": "D:\\Sunup\\bin\\Debug\\net8.0\\deployedApps\\Demo"
   },
-  "HTTPS": {
-    "Enable": true,
-    "Certificate": "SampleCertificate.pfx",
-    "CertificatePWD": "SampleCertificate"
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "System": "Information",
+      "Microsoft": "Information",
+      "Grpc": "Debug"
+    }
+  },
+  "AllowedHosts": "*",
+  "Kestrel": {
+    "Endpoints": {
+      "HttpsInlineCertFile": {
+        "Url": "http://localhost:9001",
+        //"Certificate": {
+        //  "Path": "SampleCertificate.pfx",
+        //  "Password": "SampleCertificate"
+        //}
+      }
+    }
   }
 }

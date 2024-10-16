@@ -25,7 +25,6 @@ namespace Sunup.ControlPanelWeb.Controllers
         [HttpPost("WWW")]
         public DataResponse WWW()
         {
-            this.ExtendSessionExpiration();
             var body = string.Empty;
             using (var reader = new StreamReader(this.Request.Body))
             {
@@ -43,7 +42,6 @@ namespace Sunup.ControlPanelWeb.Controllers
         [HttpPost("UploadFile")]
         public DataResponse UploadFile()
         {
-            this.ExtendSessionExpiration();
             var body = string.Empty;
             var content = string.Empty;
             var projectId = this.Request.Form.ContainsKey("projectId") ? this.Request.Form["projectId"].ToString() : string.Empty;
@@ -77,7 +75,6 @@ namespace Sunup.ControlPanelWeb.Controllers
         [ProducesResponseType(typeof(FileResult), 200)]
         public async Task<FileResult> DownloadFile()
         {
-            this.ExtendSessionExpiration();
             var body = string.Empty;
             using (var reader = new StreamReader(this.Request.Body))
             {
@@ -105,7 +102,6 @@ namespace Sunup.ControlPanelWeb.Controllers
         [HttpPost]
         public string Post()
         {
-            this.ExtendSessionExpiration();
             var sessionId = this.HttpContext.Session.Id;
             return "Test Post:Session -> " + sessionId;
         }
@@ -117,14 +113,8 @@ namespace Sunup.ControlPanelWeb.Controllers
         [HttpGet]
         public string Get()
         {
-            this.ExtendSessionExpiration();
             var sessionId = this.HttpContext.Session.Id;
             return "Test Get:Session -> " + sessionId;
-        }
-
-        private void ExtendSessionExpiration()
-        {
-            this.HttpContext.Session.Set("Extend session expiration", new byte[] { 1, 2, 3, 4, 5 });
         }
 
         private async Task<Stream> GetStream(string content)

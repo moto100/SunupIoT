@@ -20,8 +20,6 @@ namespace Sunup.IOServerHost
     /// </summary>
     public class Program
     {
-        private static IConfiguration configuration;
-
         /// <summary>
         /// Gets a value indicating whether EnableHttps.
         /// </summary>
@@ -75,11 +73,7 @@ namespace Sunup.IOServerHost
         {
             AppId = "00000000-0000-0000-0000-000000000000";
             LogLevel = "Warning";
-            if (args.Length == 0)
-            {
-                InitalizeConfig();
-            }
-            else
+            if (args.Length > 0)
             {
                 ProcessArgs(args);
             }
@@ -97,32 +91,25 @@ namespace Sunup.IOServerHost
         /// <returns>IWebHostBuilder.</returns>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, configurationBuilder) =>
-                {
-                    if (configuration == null)
-                    {
-                        configurationBuilder.AddJsonFile("IOServerHost_appsettings.json", optional: true, reloadOnChange: true);
-                    }
-                    else
-                    {
-                        configurationBuilder.AddConfiguration(configuration);
-                    }
-                })
-                .ConfigureLogging(loggngBuilder =>
-                {
-                    loggngBuilder.ClearProviders();
-                    var level = Microsoft.Extensions.Logging.LogLevel.Warning;
-                    Enum.TryParse(LogLevel, true, out level);
-                    loggngBuilder.AddFilter("Default", level);
-                    loggngBuilder.AddFilter("Microsoft", level);
-                    loggngBuilder.AddFilter("Microsoft.Hosting.Lifetime", level);
-                    loggngBuilder.AddFilter("System", level);
-                    loggngBuilder.AddFilter(AppId, level);
-                    loggngBuilder.AddLog4Net("IOServerHost_log4net.config");
-                })
                 ////.UseWindowsService()
                 .ConfigureWebHostDefaults(builder =>
                 {
+                    builder.ConfigureAppConfiguration(configurationBuilder =>
+                    {
+                        configurationBuilder.AddJsonFile("IOServerHost_appsettings.json", optional: true, reloadOnChange: true);
+                    })
+                    .ConfigureLogging(loggngBuilder =>
+                    {
+                        loggngBuilder.ClearProviders();
+                        var level = Microsoft.Extensions.Logging.LogLevel.Warning;
+                        Enum.TryParse(LogLevel, true, out level);
+                        loggngBuilder.AddFilter("Default", level);
+                        loggngBuilder.AddFilter("Microsoft", level);
+                        loggngBuilder.AddFilter("Microsoft.Hosting.Lifetime", level);
+                        loggngBuilder.AddFilter("System", level);
+                        ////loggngBuilder.AddFilter(AppId, level);
+                        loggngBuilder.AddLog4Net("IOServerHost_log4net.config");
+                    });
                     var currentPath = System.AppDomain.CurrentDomain.BaseDirectory;
 
                     builder.UseWebRoot(Path.Combine(currentPath, "IOServerHost_wwwroot"));
@@ -132,25 +119,8 @@ namespace Sunup.IOServerHost
                         if (urls.Length > 0)
                         {
                             builder.UseUrls(urls);
-                            ////Logger.LogInfo($"[IO Server Host]Server will listen on {Urls}.");
+                            Logger.LogInfo($"[IO Server Host]Server will listen on {Urls}.");
                         }
-                    }
-
-                    if (EnableHttps && !string.IsNullOrEmpty(Certificate) && !string.IsNullOrEmpty(CertificatePWD))
-                    {
-                        builder.ConfigureKestrel((context, serverOptions) =>
-                          {
-                              serverOptions.ConfigureHttpsDefaults(configureOption =>
-                              {
-                                  ////configureOption.SslProtocols = System.Security.Authentication.SslProtocols.Tls;
-                                  configureOption.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(Path.Combine(currentPath, Certificate), CertificatePWD);
-                              });
-                              ////serverOptions.Listen(IPAddress.Any, HttpsPort, listenOptions =>
-                              ////{
-                              ////    ////listenOptions.Protocols = HttpProtocols.Http1;
-                              ////    listenOptions.UseHttps(Path.Combine(currentPath, Certificate), CertificatePWD);
-                              ////});
-                          });
                     }
 
                     builder.UseStartup<Startup>();
@@ -242,57 +212,6 @@ namespace Sunup.IOServerHost
                     ////        break;
                     ////    }
             }
-        }
-
-        private static void InitalizeConfig()
-        {
-            var builder = new ConfigurationBuilder()
-            .AddJsonFile("IOServerHost_appsettings.json", optional: true, reloadOnChange: true);
-            configuration = builder.Build();
-
-            var defaultAppPath = configuration.GetValue<string>("appSettings:DefaultAppPath");
-            BasePath = defaultAppPath;
-            Urls = configuration.GetValue<string>("appSettings:ListenOn");
-
-            EnableHttps = configuration.GetValue<bool>("HTTPS:Enable");
-            Certificate = configuration.GetValue<string>("HTTPS:Certificate");
-
-            CertificatePWD = configuration.GetValue<string>("HTTPS:CertificatePWD");
-
-            ////HttpsPort = configuration.GetValue<int>("HTTPS:HttpsPort");
-
-            ////ControlPanel.Config.DbConnectionString = configuration.GetConnectionString("DbConnection");
-            ////var enableLogTrace = configuration.GetValue<bool>("log:EnableLogTrace");
-            ////Logger.EnableLogTrace = enableLogTrace;
-            ////var enableLogError = configuration.GetValue<bool>("log:EnableLogError");
-            ////Logger.EnableLogError = enableLogError;
-            ////var enableLogInfo = configuration.GetValue<bool>("log:EnableLogInfo");
-            ////Logger.EnableLogInfo = enableLogInfo;
-            ////var enableLogWarning = configuration.GetValue<bool>("log:EnableLogWarning");
-            ////Logger.EnableLogWarning = enableLogWarning;
-            ////var enableConsoleLog = configuration.GetValue<bool>("log:ConsoleListener:Enable");
-            ////if (enableConsoleLog)
-            ////{
-            ////    IListener listener = new ConsoleListener();
-            ////    listener.EnableLogTrace = configuration.GetValue<bool>("log:ConsoleListener:EnableLogTrace");
-            ////    listener.EnableLogError = configuration.GetValue<bool>("log:ConsoleListener:EnableLogError");
-            ////    listener.EnableLogInfo = configuration.GetValue<bool>("log:ConsoleListener:EnableLogInfo");
-            ////    listener.EnableLogWarning = configuration.GetValue<bool>("log:ConsoleListener:EnableLogWarning");
-            ////    ListenerManager.Instance.AddListener("ConsoleListener", listener);
-            ////    listener.Start();
-            ////}
-
-            ////var enableFileLog = configuration.GetValue<bool>("log:FileListener:Enable");
-            ////if (enableFileLog)
-            ////{
-            ////    IListener listener = new FileListener(defaultAppPath);
-            ////    listener.EnableLogTrace = configuration.GetValue<bool>("log:FileListener:EnableLogTrace");
-            ////    listener.EnableLogError = configuration.GetValue<bool>("log:FileListener:EnableLogError");
-            ////    listener.EnableLogInfo = configuration.GetValue<bool>("log:FileListener:EnableLogInfo");
-            ////    listener.EnableLogWarning = configuration.GetValue<bool>("log:FileListener:EnableLogWarning");
-            ////    ListenerManager.Instance.AddListener("FileListener", listener);
-            ////    listener.Start();
-            ////}
         }
     }
 }

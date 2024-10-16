@@ -50,7 +50,7 @@ namespace Sunup.IOServerHost
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(20);
-                options.Cookie.Name = ".Sunup";
+                options.Cookie.Name = ".SunupIOServerHost";
                 options.Cookie.HttpOnly = false;
                 options.Cookie.IsEssential = true;
             });
@@ -70,7 +70,8 @@ namespace Sunup.IOServerHost
         /// <param name="loggerFactory">loggerFactory.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            var basepath = Program.BasePath;
+            var defaultAppPath = this.Configuration.GetValue<string>("appSettings:DefaultAppPath");
+            var basepath = Program.BasePath ?? defaultAppPath;
             var appId = Program.AppId;
             ////var logger = loggerFactory.CreateLogger(appId);
             ////Logger.MSLogger = logger;

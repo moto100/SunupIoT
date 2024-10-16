@@ -97,3 +97,10 @@ ControlPanelWeb/Properties/PublishProfiles/Publish_SelfHost_linux-arm_NetCoreApp
 IOServerHost/IOServerHost.csproj.user
 LicenseMaker/LicenseMaker.csproj.user
 ScriptExecutor/ScriptExecutor.csproj.user
+/DeviceProxyServer/bin/Debug/net8.0
+/DeviceProxyServer/obj
+/gRpcClientTest/bin/Debug/net8.0
+/gRpcClientTest/obj
+/DataServer/bin/Debug/net8.0
+/DataServer/obj
+/JintTest/obj/Debug/net8.0/ref/JintTest.dll

@@ -16,15 +16,32 @@
       "hideInBreadcrumb": true,
       "children": [
         {
-          "text": "全部项目",
-          "icon": "anticon-bulb",
+          "text": "应用",
+          "icon": "anticon-appstore",
           "link": "/project/project-list",
           "i18n": "menu.project"
+        },{
+          "text": "仪表盘",
+          "icon": "anticon-dashboard",
+          "link": "/project/project-chart",
+          "i18n": "menu.dashboard"
+        },{
+          "text": "图形",
+          "icon": "anticon-dashboard",
+          "link": "/project/chart-list",
+          "i18n": "menu.chartlist"
         },{
           "text": "日志",
           "icon": "anticon-bulb",
           "link": "/project/project-log",
           "i18n": "menu.log"
+        }
+        ,{
+          "text": "脚本工具",
+          "icon": "anticon-edit",
+          "link": "/project/project-jstool",
+          "i18n": "menu.jstool",
+          "target": "_blank"
         }]
     }
         

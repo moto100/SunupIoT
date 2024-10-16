@@ -50,7 +50,7 @@ namespace Sunup.ControlPanelWeb
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(20);
-                options.Cookie.Name = ".Sunup";
+                options.Cookie.Name = ".SunupControlPanelWeb";
                 options.Cookie.HttpOnly = false;
                 options.Cookie.IsEssential = true;
             });
